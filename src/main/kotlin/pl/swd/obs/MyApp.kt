@@ -16,6 +16,7 @@ class MyView: View() {
         listview<String> {
             (0..9).asSequence().map { it.toString() }.forEach { items.add(it) }
 
+
             events(KeyEvent.KEY_TYPED)
                     .map { it.character }
                     .filter { it.matches(Regex("[0-9]")) }
