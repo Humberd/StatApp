@@ -18,8 +18,9 @@
         <rxkotlinfx.version>2.2.0</rxkotlinfx.version>
         <rxkotlin.version>2.1.0</rxkotlin.version>
         <rxjava.version>2.1.0</rxjava.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
 
-        <start-class>pl.swd.app.StatApp</start-class>
+        <main.class>pl.swd.app.Main</main.class>
     </properties>
 
     <dependencies>
@@ -91,6 +92,19 @@
                 </executions>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>${main.class}</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
