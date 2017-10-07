@@ -1,4 +1,4 @@
-package pl.swd
+package pl.swd.login
 
 
 import javafx.animation.KeyFrame
@@ -9,7 +9,7 @@ import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import javafx.util.Duration
-import pl.swd.Styles.Companion.loginScreen
+import pl.swd.login.Styles.Companion.loginScreen
 import tornadofx.*
 
 class LoginScreen : View() {

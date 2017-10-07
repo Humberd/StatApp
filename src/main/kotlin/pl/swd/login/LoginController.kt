@@ -1,4 +1,4 @@
-package pl.swd
+package pl.swd.login
 
 
 import javafx.application.Platform
