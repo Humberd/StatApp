@@ -11,5 +11,7 @@ class AppTabs : View("My View") {
     fun addTab(appViewTab: AppViewTab) {
         root.tabs.add(appViewTab)
         root.selectionModel.select(appViewTab)
+
+        appViewTab.renameMenuItem.setOnAction { find(RenameTabView::class).openModal() }
     }
 }
