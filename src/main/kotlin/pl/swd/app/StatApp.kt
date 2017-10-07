@@ -9,8 +9,6 @@ class StatApp: App(AppMainView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
 
-        println("\n\n\n\n\n\n\n\n\nSTARTED\n\n\n\n\n\n\n\n\n\n")
-
         with(stage) {
             width = 500.0
             height = 400.0
