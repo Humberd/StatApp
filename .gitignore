@@ -1,6 +1,4 @@
 target
-*.iml
-
 .idea/sonarlint
 .idea/markdown-navigator
 
