@@ -9,7 +9,6 @@ import tornadofx.*
 class Workbench : View() {
     override val root = BorderPane()
     val loginController: LoginController by inject()
-
     init {
         title = "Secure Workbench"
 

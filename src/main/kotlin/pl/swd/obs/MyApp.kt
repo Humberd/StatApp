@@ -3,10 +3,7 @@ package pl.swd.obs
 import com.github.thomasnield.rxkotlinfx.events
 import javafx.application.Application
 import javafx.scene.input.KeyEvent
-import tornadofx.App
-import tornadofx.View
-import tornadofx.listview
-import tornadofx.vbox
+import tornadofx.*
 
 class MyApp: App(MyView::class) {
 }
