@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pl.swd</groupId>
-    <artifactId>Stat App</artifactId>
+    <artifactId>stat-app</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
