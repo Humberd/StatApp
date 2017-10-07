@@ -18,6 +18,8 @@
         <rxkotlinfx.version>2.2.0</rxkotlinfx.version>
         <rxkotlin.version>2.1.0</rxkotlin.version>
         <rxjava.version>2.1.0</rxjava.version>
+
+        <start-class>pl.swd.app.StatApp</start-class>
     </properties>
 
     <dependencies>

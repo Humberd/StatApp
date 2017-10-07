@@ -1,8 +1,12 @@
 package pl.swd.login
 
 
+import com.sun.org.apache.bcel.internal.Repository.addClass
+import io.reactivex.Observable
+import io.reactivex.rxjavafx.observables.JavaFxObservable
 import javafx.animation.KeyFrame
 import javafx.animation.Timeline
+import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.scene.control.CheckBox
 import javafx.scene.control.PasswordField
@@ -11,6 +15,7 @@ import javafx.scene.layout.GridPane
 import javafx.util.Duration
 import pl.swd.login.Styles.Companion.loginScreen
 import tornadofx.*
+import java.util.concurrent.TimeUnit
 
 class LoginScreen : View() {
     override val root = GridPane()
@@ -23,9 +28,8 @@ class LoginScreen : View() {
     init {
         title = "Please log in"
 
-        with (root) {
+        with(root) {
             addClass(loginScreen)
-
             row("Username") {
                 username = textfield()
             }
@@ -51,7 +55,6 @@ class LoginScreen : View() {
                     }
                 }
             }
-
         }
     }
 
