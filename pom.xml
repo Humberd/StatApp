@@ -16,6 +16,7 @@
         <junit.version>4.12</junit.version>
         <tornadofx.version>1.7.11</tornadofx.version>
         <rxkotlinfx.version>2.2.0</rxkotlinfx.version>
+        <rxkotlin.version>2.1</rxkotlin.version>
     </properties>
 
     <dependencies>
@@ -47,6 +48,11 @@
             <groupId>com.github.thomasnield</groupId>
             <artifactId>rxkotlinfx</artifactId>
             <version>${rxkotlinfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxkotlin</artifactId>
+            <version>${rxkotlin.version}</version>
         </dependency>
     </dependencies>
 
