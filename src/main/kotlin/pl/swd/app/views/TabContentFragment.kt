@@ -32,7 +32,11 @@ class TabContentFragment : Fragment("My View") {
         logger.debug { "Table created with ${dataTable.rows.size} rows" }
     }
 
+    /**
+     * Adding  listeners
+     */
     override fun onDock() {
+        // todo Add removeListener on onDestroy?/unDock?
         dataTable.columns.addListener { event: ListChangeListener.Change<out DataColumn>? ->
             event?.next()
             if (event?.wasAdded()!!) {
@@ -56,10 +60,13 @@ class TabContentFragment : Fragment("My View") {
         }
     }
 
+    /**
+     * Adds a column to a table based on a dataColumn generated from source file
+     */
     private fun addColumn(dataColumn: DataColumn) {
         logger.debug { "Added new column: '${dataColumn.name}'" }
 
-        table.column(dataColumn.name, String::class)
+        table.column(dataColumn.name, Any::class)
                 .setCellValueFactory { cellData ->
                     val dataValue = cellData?.value?.rowValuesMap?.get(dataColumn.name)
 
