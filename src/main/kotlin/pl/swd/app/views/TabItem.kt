@@ -1,5 +1,6 @@
 package pl.swd.app.views;
 
+import javafx.scene.control.Button
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.MenuItem
 import javafx.scene.control.Tab
@@ -14,6 +15,12 @@ class TabItem(val dataTable: DataTable,
 
     init {
         text = originalFile.name
+
+        /*Here I place a TabContentFragment component and pass it a dataTable as a parameter*/
+        content = vbox {
+            this += find(TabContentFragment::class,
+                    params = mapOf(TabContentFragment::dataTable to dataTable))
+        }
 
         renameMenuItem = MenuItem("Rename")
         contextMenu = ContextMenu(renameMenuItem)

@@ -2,5 +2,5 @@ package pl.swd.app.models;
 
 data class DataRow(
         val rawInitialString: String,
-        val rowValuesList: ArrayList<DataValue>
+        val rowValuesMap: Map<String, DataValue>
 )

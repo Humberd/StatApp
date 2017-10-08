@@ -13,18 +13,18 @@ class FileParserController : Controller() {
     }
 
     fun generateMockDataTable(): DataTable {
-        val janId = DataValue("1", "Id")
-        val janName = DataValue("Jan", "Name")
-        val piotrId = DataValue("2", "Id")
-        val piotrName = DataValue("Piotr", "Name")
+        val janId = DataValue("1")
+        val janName = DataValue("Jan")
+        val piotrId = DataValue("2")
+        val piotrName = DataValue("Piotr")
 
         val idColumn = DataColumn("Id", arrayListOf(janId, piotrId))
         val nameColumn = DataColumn("Name", arrayListOf(janName, piotrName))
 
-        val janRow = DataRow("1;Jan", arrayListOf(janId, janName))
-        val piotrRow = DataRow("2;Piotr", arrayListOf(piotrId, piotrName))
+        val janRow = DataRow("1;Jan", mapOf("Id" to janId, "Name" to janName))
+        val piotrRow = DataRow("2;Piotr", mapOf("Id" to piotrId, "Name" to piotrName))
 
-        return DataTable(rows = arrayListOf(janRow, piotrRow),
-                columns = arrayListOf(idColumn, nameColumn))
+        return DataTable(rows = arrayListOf(janRow, piotrRow).observable(),
+                columns = arrayListOf(idColumn, nameColumn).observable())
     }
 }

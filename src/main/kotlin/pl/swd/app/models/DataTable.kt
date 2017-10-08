@@ -1,6 +1,8 @@
 package pl.swd.app.models;
 
+import javafx.collections.ObservableList
+
 data class DataTable (
-        val rows: ArrayList<DataRow> = ArrayList(),
-        val columns: ArrayList<DataColumn> = ArrayList()
+        val rows: ObservableList<DataRow>,
+        val columns: ObservableList<DataColumn>
 )
