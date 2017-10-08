@@ -1,28 +1,21 @@
 package pl.swd.app.views;
 
 import com.github.thomasnield.rxkotlinfx.actionEvents
-import com.github.thomasnield.rxkotlinfx.doOnNextFx
-import com.github.thomasnield.rxkotlinfx.events
-import io.reactivex.Observable
-import io.reactivex.rxjavafx.observables.JavaFxObservable
-import javafx.event.ActionEvent
-import javafx.event.EventType
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
-import javafx.scene.input.KeyEvent
 import mu.KLogging
 import pl.swd.app.controllers.FileIOController
 import pl.swd.app.controllers.FileParserController
 import tornadofx.*
 import java.io.File
 
-class AppMenuBar : View("My View") {
+class MenuBarView : View("My View") {
     companion object : KLogging()
 
     val fileIOController: FileIOController by inject()
     val fileParserController: FileParserController by inject()
-    val appTabs: AppTabs by inject()
+    val tabsView: TabsView by inject()
 
     init {
         // todo only for debugging purposes, remove this file
@@ -37,16 +30,16 @@ class AppMenuBar : View("My View") {
                 actionEvents()
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
                         .flatMap { fileIOController.openFileDialog() }
-                        .map(this@AppMenuBar::registerTab)
+                        .map(this@MenuBarView::registerTab)
                         .subscribe { logger.debug { "Registered new tab: ${it.text}" } }
             }
         }
     }
 
-    fun registerTab(file: File): AppViewTab {
+    fun registerTab(file: File): TabItem {
         val dataTable = fileParserController.generateDataTable(file)
-        val viewTab = AppViewTab(dataTable, file)
-        appTabs.addTab(viewTab)
+        val viewTab = TabItem(dataTable, file)
+        tabsView.addTab(viewTab)
 
         return viewTab
     }

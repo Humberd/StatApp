@@ -2,10 +2,10 @@ package pl.swd.app
 
 import javafx.application.Application
 import javafx.stage.Stage
-import pl.swd.app.views.AppMainView
+import pl.swd.app.views.MainView
 import tornadofx.*
 
-class StatApp: App(AppMainView::class) {
+class StatApp: App(MainView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
 
