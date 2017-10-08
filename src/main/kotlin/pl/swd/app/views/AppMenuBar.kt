@@ -1,5 +1,8 @@
 package pl.swd.app.views;
 
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
 import pl.swd.app.controllers.FileIOController
 import pl.swd.app.controllers.FileParserController
 import tornadofx.*
@@ -18,7 +21,7 @@ class AppMenuBar : View("My View") {
 
     override val root = menubar {
         menu("File") {
-            item("Open", "Shortcut+O").action {
+            item("Open", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)).action {
                 val files = fileIOController.openFileDialog()
                 files.forEach { registerTab(it) }
             }
