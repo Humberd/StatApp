@@ -43,6 +43,7 @@ class RenameTabModal : View("Rename Tab") {
     override fun onDock() {
         logger.debug { "Opening a Rename Tab Modal: '${tabInput.text}'" }
 
+        /*Need to rebind a ViewModel for the new data comming from 'tabInput'*/
         model.rebind { tab = tabInput }
         tabNameTextField.requestFocus()
     }
