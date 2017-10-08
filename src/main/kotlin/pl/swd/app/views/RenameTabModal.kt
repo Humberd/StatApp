@@ -7,18 +7,16 @@ import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
 import tornadofx.*
 
-class RenameTabModal : View("Rename Tab") {
+class RenameTabModal : Fragment("Rename Tab") {
     companion object : KLogging()
 
     val tabInput: Tab by param()
     val model = TabViewModel(tabInput)
 
-    var tabNameTextField: TextField by singleAssign()
-
     override val root = form {
         fieldset("Tab Info") {
             field("Tab Name") {
-                tabNameTextField = textfield(model.tabName)
+                textfield(model.tabName).requestFocus()
             }
         }
 
@@ -42,10 +40,6 @@ class RenameTabModal : View("Rename Tab") {
 
     override fun onDock() {
         logger.debug { "Opening a Rename Tab Modal: '${tabInput.text}'" }
-
-        /*Need to rebind a ViewModel for the new data comming from 'tabInput'*/
-        model.rebind { tab = tabInput }
-        tabNameTextField.requestFocus()
     }
 
     override fun onUndock() {

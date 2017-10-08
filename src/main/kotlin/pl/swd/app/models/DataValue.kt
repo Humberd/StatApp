@@ -1,6 +1,6 @@
 package pl.swd.app.models;
 
-data class DataValue<T>(
-        val value: T,
+data class DataValue(
+        val value: Any,
         val columnName: String
 )
