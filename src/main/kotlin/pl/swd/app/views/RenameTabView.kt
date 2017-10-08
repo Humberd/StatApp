@@ -4,39 +4,41 @@ import javafx.scene.control.Tab
 import javafx.scene.control.TextField
 import tornadofx.*
 
-class RenameTabView : View("Rename tab") {
-    val tab: Tab by param()
-    lateinit var model: TabViewModel
+class RenameTabView : View("Rename tabInput") {
+    val tabInput: Tab by param()
+    val model = TabViewModel(tabInput)
 
     var tabNameTextField: TextField by singleAssign()
-
-    init {
-        println("inited")
-    }
 
     override val root = form {
         fieldset("Tab Info") {
             field("Tab Name") {
-                tabNameTextField = textfield()
+                tabNameTextField = textfield(model.tabName)
             }
         }
-        button("Commit") {
-            action { save() }
+
+        buttonbar {
+            button("Reset").action {
+                model.rollback()
+            }
+
+            button("Save") {
+                enableWhen(model.dirty)
+                action {
+                    save()
+                }
+            }
         }
+
     }
 
     override fun onDock() {
-        model = TabViewModel(tab)
-
-        with(tabNameTextField) {
-            bind(model.tabName)
-            requestFocus()
-        }
+        model.rebind { tab = tabInput }
+        tabNameTextField.requestFocus()
     }
 
     private fun save() {
         model.commit()
-
         close()
     }
 }
