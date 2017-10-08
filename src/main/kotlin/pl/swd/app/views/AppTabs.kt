@@ -8,6 +8,7 @@ class AppTabs : View("My View") {
 
     fun addTab(appViewTab: AppViewTab) {
         root.tabs.add(appViewTab)
+        /*Need to select a newly added tab*/
         root.selectionModel.select(appViewTab)
 
         /*When clicking a "Rename" in a context menu it opens a RenameModal
