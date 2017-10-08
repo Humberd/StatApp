@@ -12,6 +12,10 @@ class AppTabs : View("My View") {
         root.tabs.add(appViewTab)
         root.selectionModel.select(appViewTab)
 
-        appViewTab.renameMenuItem.setOnAction { find(RenameTabView::class).openModal() }
+        /*When clicking a "Rename" context menu it opens a RenameModal
+        * And passes a tab to it*/
+        appViewTab.renameMenuItem.setOnAction {
+            find(RenameTabView::class, mapOf(RenameTabView::tab to appViewTab)).openModal()
+        }
     }
 }
