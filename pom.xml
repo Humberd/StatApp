@@ -19,6 +19,8 @@
         <rxkotlin.version>2.1.0</rxkotlin.version>
         <rxjava.version>2.1.0</rxjava.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+        <kotlin-logging.version>1.4.6</kotlin-logging.version>
+        <slf4j-simple.version>1.7.5</slf4j-simple.version>
 
         <main.class>pl.swd.app.Main</main.class>
     </properties>
@@ -35,6 +37,16 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging</artifactId>
+            <version>${kotlin-logging.version}</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-simple</artifactId>-->
+            <!--<version>${slf4j-simple.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
