@@ -1,10 +1,5 @@
 package pl.swd.app.views;
 
-import com.github.thomasnield.rxkotlinfx.observeOnFx
-import com.github.thomasnield.rxkotlinfx.toObservable
-import io.reactivex.Observable
-import javafx.beans.property.SimpleStringProperty
-import javafx.beans.value.ObservableValue
 import javafx.collections.ListChangeListener
 import javafx.scene.control.TableView
 import mu.KLogging
@@ -14,7 +9,6 @@ import pl.swd.app.models.DataRow
 import pl.swd.app.models.DataTable
 import pl.swd.app.models.DataValue
 import tornadofx.*
-import java.util.concurrent.TimeUnit
 
 class TabContentFragment : Fragment("My View") {
     companion object : KLogging()

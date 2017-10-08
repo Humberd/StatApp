@@ -1,7 +1,6 @@
 package pl.swd.app.views;
 
 import javafx.scene.control.Tab
-import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
