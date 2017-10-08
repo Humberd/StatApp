@@ -9,6 +9,7 @@ import java.io.File
 
 class AppViewTab(val dataTable: DataTable,
                  val originalFile: File) : Tab() {
+    /*Need to save the reference, so that a parent component can access it and add a listener to it*/
     var renameMenuItem: MenuItem by singleAssign()
 
     init {
