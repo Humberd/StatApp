@@ -7,8 +7,8 @@ import pl.swd.app.models.DataTable
 import tornadofx.*
 import java.io.File
 
-class TabItem(val dataTable: DataTable,
-              val originalFile: File) : Tab() {
+class Tab(val dataTable: DataTable,
+          val originalFile: File) : Tab() {
     /*Need to save the reference, so that a parent component can access it and add a listener to it*/
     var renameMenuItem: MenuItem by singleAssign()
 

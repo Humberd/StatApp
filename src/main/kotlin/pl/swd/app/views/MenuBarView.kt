@@ -36,9 +36,9 @@ class MenuBarView : View("My View") {
         }
     }
 
-    fun registerTab(file: File): TabItem {
+    fun registerTab(file: File): Tab {
         val dataTable = fileParserController.generateDataTable(file)
-        val viewTab = TabItem(dataTable, file)
+        val viewTab = Tab(dataTable, file)
         tabsView.addTab(viewTab)
 
         return viewTab
