@@ -1,9 +1,6 @@
 package pl.swd.app.views;
 
-import com.github.salomonbrys.kotson.fromJson
-import com.google.gson.GsonBuilder
 import javafx.collections.ListChangeListener
-import javafx.collections.ObservableList
 import javafx.scene.control.TableView
 import mu.KLogging
 import pl.swd.app.exceptions.InvalidColumnException
@@ -11,7 +8,6 @@ import pl.swd.app.models.DataColumn
 import pl.swd.app.models.DataRow
 import pl.swd.app.models.DataTable
 import pl.swd.app.models.DataValue
-import pl.swd.app.serializers.ObservableListJsonDeserializer
 import tornadofx.*
 
 class TabContentFragment : Fragment("My View") {
@@ -56,20 +52,6 @@ class TabContentFragment : Fragment("My View") {
                 logger.debug { "Removed ${event.removedSize} rows. Total size: ${event.list.size}" }
             }
         }
-
-        val gson = GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(ObservableList::class.java, ObservableListJsonDeserializer())
-                .create()
-        val jsonString = gson.toJson(dataTable)
-        println(jsonString)
-
-        println("------------------")
-        val foo = gson.fromJson<DataTable>(jsonString)
-        val jsonString2 = gson.toJson(foo)
-        println(jsonString2)
-        println("-----------")
-//        println(jsonString == jsonString2)
     }
 
     /**
