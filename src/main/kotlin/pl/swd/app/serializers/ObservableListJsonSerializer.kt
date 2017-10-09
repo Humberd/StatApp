@@ -8,7 +8,7 @@ import tornadofx.*
 import java.lang.reflect.Type
 import java.util.*
 
-class ObservableListJsonDeserializer: JsonDeserializer<ObservableList<Any>> {
+class ObservableListJsonSerializer : JsonDeserializer<ObservableList<Any>> {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): ObservableList<Any> {
         val list = context?.deserialize<List<Any>>(json, ArrayList::class.java)!!
 

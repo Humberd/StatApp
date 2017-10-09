@@ -5,13 +5,13 @@ import com.google.gson.GsonBuilder
 import javafx.collections.ObservableList
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import pl.swd.app.serializers.ObservableListJsonDeserializer
+import pl.swd.app.serializers.ObservableListJsonSerializer
 
 @Configuration
 open class GsonConfiguration {
     @Bean
     open fun createGson(): Gson = GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(ObservableList::class.java, ObservableListJsonDeserializer())
+            .registerTypeAdapter(ObservableList::class.java, ObservableListJsonSerializer())
             .create()
 }
