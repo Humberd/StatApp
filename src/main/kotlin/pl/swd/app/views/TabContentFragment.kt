@@ -31,6 +31,8 @@ class TabContentFragment : Fragment("My View") {
      */
     override fun onDock() {
         // todo Add removeListener on onDestroy?/unDock?
+
+        /*When a column is added/removed from a columnsList I immediately reflect it in a table */
         dataTable.columns.addListener { event: ListChangeListener.Change<out DataColumn>? ->
             event?.next()
             if (event?.wasAdded()!!) {
@@ -42,6 +44,7 @@ class TabContentFragment : Fragment("My View") {
             }
         }
 
+        /*When a row is added/removed from a rowsList I immediately reflect it in a table */
         dataTable.rows.addListener { event: ListChangeListener.Change<out DataRow>? ->
             event?.next()
             if (event?.wasAdded()!!) {
