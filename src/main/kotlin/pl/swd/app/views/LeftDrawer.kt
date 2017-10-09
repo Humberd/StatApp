@@ -1,5 +1,7 @@
 package pl.swd.app.views;
 
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.toObservable
 import mu.KLogging
 import pl.swd.app.models.SpreadSheet
 import pl.swd.app.services.ProjectService
@@ -10,6 +12,7 @@ class LeftDrawer : View("Drawer") {
     companion object: KLogging()
 
     val projectService: ProjectService by di()
+    val tabsView: TabsView by inject()
 
     override val root = drawer {
         item("Project") {
@@ -25,13 +28,27 @@ class LeftDrawer : View("Drawer") {
 
                             logger.debug { "Found New Project '${currentProject.get().name}' - binding SpreadSheets list" }
                             return@map currentProject.get().spreadSheetList
-                        }.subscribe { items = it }
+                        }
+                        .doOnNext { items = it }
+                        /*Checking if a speadsheet should be opened in a tab*/
+                        .flatMapIterable { it }
+                        .subscribe {
+                            if (it.autoOpenTabOnLoad) {
+                                tabsView.addTab(it)
+                            }
+                        }
 
                 /*Makes sure that whenever a spreadsheet name changes
                 * it will properly reflect it in a listview*/
                 cellFormat { spreadSheet ->
                     graphic = label(spreadSheet.nameProperty)
                 }
+
+                /* todo: should only trigger event on a double click on an item list
+                * Current behavour: when item list is selected it doesn't matter where you double click*/
+                onUserSelect { tabsView.addTab(it) }
+
+                // todo add context menu on item right click. Add extension functions?
             }
         }
     }

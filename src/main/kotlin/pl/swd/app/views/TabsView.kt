@@ -11,6 +11,11 @@ class TabsView : View("My View") {
     override val root = TabPane()
 
     fun addTab(spreadSheet: SpreadSheet) {
+        if (root.tabs.any { (it as TabWrapper).spreadSheet === spreadSheet }) {
+            logger.debug { "Spreadsheet already exists as a Tab" }
+            return
+        }
+
         val tabWrapper = TabWrapper(spreadSheet)
         root.tabs.add(tabWrapper)
         /*Select a newly added tabWrapper*/
