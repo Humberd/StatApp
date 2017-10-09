@@ -12,7 +12,7 @@ class TabsView : View("My View") {
 
     fun addTab(spreadSheet: SpreadSheet) {
         if (root.tabs.any { (it as TabWrapper).spreadSheet === spreadSheet }) {
-            logger.debug { "Spreadsheet already exists as a Tab" }
+            logger.debug { "Spreadsheet '${spreadSheet.name}' already exists as a Tab" }
             return
         }
 
@@ -27,5 +27,8 @@ class TabsView : View("My View") {
             find(RenameTabModal::class, mapOf(RenameTabModal::tabInput to tabWrapper))
                     .openModal()
         }
+
+        /*When closing a tab it should set a flag not to auto open it anymore*/
+        tabWrapper.setOnClosed { tabWrapper.spreadSheet.autoOpenTabOnLoad = false }
     }
 }
