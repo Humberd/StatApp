@@ -21,14 +21,16 @@ class TabContentFragment : Fragment("My View") {
     }
 
     init {
+        /*When the tab is created I am given a DataTable object.
+        * Here I make sure its every column is reflected in a table*/
         dataTable.columns.forEach(this::addColumn)
+
+        /*Here I bind DataTable rows array to the table rows.
+        * In other words: table uses DataTable rows as a source of data*/
         table.items = dataTable.rows
         logger.debug { "Table created with ${dataTable.rows.size} rows" }
     }
 
-    /**
-     * Adding  listeners
-     */
     override fun onDock() {
         // todo Add removeListener on onDestroy?/unDock?
 
@@ -44,7 +46,7 @@ class TabContentFragment : Fragment("My View") {
             }
         }
 
-        /*When a row is added/removed from a rowsList I immediately reflect it in a table */
+        /*When a row is added/removed from a rowsList I log it */
         dataTable.rows.addListener { event: ListChangeListener.Change<out DataRow>? ->
             event?.next()
             if (event?.wasAdded()!!) {
