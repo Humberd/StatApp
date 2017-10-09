@@ -1,6 +1,6 @@
 package pl.swd.app.views;
 
-import io.reactivex.Observable
+import com.github.thomasnield.rxkotlinfx.onChangedObservable
 import io.reactivex.rxkotlin.toObservable
 import mu.KLogging
 import pl.swd.app.models.SpreadSheet
@@ -9,7 +9,7 @@ import pl.swd.app.utils.emptyObservableList
 import tornadofx.*
 
 class LeftDrawer : View("Drawer") {
-    companion object: KLogging()
+    companion object : KLogging()
 
     val projectService: ProjectService by di()
     val tabsView: TabsView by inject()
@@ -31,7 +31,11 @@ class LeftDrawer : View("Drawer") {
                         }
                         .doOnNext { items = it }
                         /*Checking if a speadsheet should be opened in a tab*/
-                        .flatMapIterable { it }
+                        // todo: move it somewhere else?
+                        // todo: onChangedObservable emits list of all speadsheets instead of only the added one
+                        .switchMap { it.onChangedObservable() }
+                        .doOnNext { println(it.size) }
+                        .switchMap { it.toObservable() }
                         .subscribe {
                             if (it.autoOpenTabOnLoad) {
                                 tabsView.addTab(it)
