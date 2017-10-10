@@ -31,8 +31,6 @@ class MenuBarView : View("My View") {
                 actionEvents()
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
                         .flatMap { fileIOService.openFileDialog() }
-                        .doOnNext { find(RenameTabModal::class)
-                                .openModal() }
                         .map(this@MenuBarView::registerSpreadSheet)
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
             }

@@ -3,6 +3,7 @@ package pl.swd.app.configs;
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.PropertySource
 import pl.swd.app.services.AppStateSaverService
 import pl.swd.app.services.ProjectService
 
