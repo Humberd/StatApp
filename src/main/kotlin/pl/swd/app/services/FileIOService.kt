@@ -1,13 +1,15 @@
-package pl.swd.app.controllers
+package pl.swd.app.services
 
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.toObservable
 import javafx.stage.FileChooser
 import mu.KLogging
+import org.springframework.stereotype.Service
 import tornadofx.*
 import java.io.File
 
-class FileIOController : Controller() {
+@Service
+class FileIOService {
     companion object : KLogging()
 
     val openFileExtensions = arrayOf(FileChooser.ExtensionFilter("Text file", "*.txt"))

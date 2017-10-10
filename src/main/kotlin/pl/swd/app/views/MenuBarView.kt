@@ -5,8 +5,8 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
 import mu.KLogging
-import pl.swd.app.controllers.FileIOController
-import pl.swd.app.controllers.FileParserController
+import pl.swd.app.services.FileIOService
+import pl.swd.app.services.DataFileParserService
 import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.models.SpreadSheet
 import pl.swd.app.services.ProjectService
@@ -17,12 +17,12 @@ class MenuBarView : View("My View") {
     companion object : KLogging()
 
     val projectService: ProjectService by di()
-    val fileIOController: FileIOController by inject()
-    val fileParserController: FileParserController by inject()
+    val fileIOService: FileIOService by di()
+    val dataFileParserService: DataFileParserService by di()
 
     init {
         // todo only for debugging purposes, remove this file
-        registerSpreadSheet(File(fileIOController.getCurrentDirectory() + "/testFile.txt"))
+        registerSpreadSheet(File(fileIOService.getCurrentDirectory() + "/testFile.txt"))
     }
 
     override val root = menubar {
@@ -30,7 +30,9 @@ class MenuBarView : View("My View") {
             item("Open", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
-                        .flatMap { fileIOController.openFileDialog() }
+                        .flatMap { fileIOService.openFileDialog() }
+                        .doOnNext { find(RenameTabModal::class)
+                                .openModal() }
                         .map(this@MenuBarView::registerSpreadSheet)
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
             }
@@ -51,7 +53,7 @@ class MenuBarView : View("My View") {
                 throw ProjectDoesNotExistException()
             }
 
-            val dataTable = fileParserController.generateDataTable(file)
+            val dataTable = dataFileParserService.generateDataTable(file)
             val spreadSheet = SpreadSheet(
                     name = spreadSheetName,
                     dataTable = dataTable

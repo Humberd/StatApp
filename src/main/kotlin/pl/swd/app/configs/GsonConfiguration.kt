@@ -10,7 +10,7 @@ import pl.swd.app.serializers.ObservableListJsonSerializer
 @Configuration
 open class GsonConfiguration {
     @Bean
-    open fun createGson(): Gson = GsonBuilder()
+    open fun gson(): Gson = GsonBuilder()
             .setPrettyPrinting()
             .registerTypeAdapter(ObservableList::class.java, ObservableListJsonSerializer())
             .create()

@@ -1,5 +1,6 @@
-package pl.swd.app.controllers;
+package pl.swd.app.services;
 
+import org.springframework.stereotype.Service
 import pl.swd.app.exceptions.FileParserException
 import pl.swd.app.models.DataColumn
 import pl.swd.app.models.DataRow
@@ -8,7 +9,8 @@ import pl.swd.app.models.DataValue
 import tornadofx.*
 import java.io.File
 
-class FileParserController : Controller() {
+@Service
+class DataFileParserService {
     fun generateDataTable(file: File): DataTable {
         return parseFile(file)
     }

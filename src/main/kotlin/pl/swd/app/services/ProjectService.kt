@@ -29,5 +29,4 @@ open class ProjectService {
         currentProject.onNext(emptyOptional())
     }
 
-
 }
