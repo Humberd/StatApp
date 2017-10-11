@@ -22,9 +22,19 @@ class MenuBarView : View("My View") {
 
     override val root = menubar {
         menu("File") {
-            item("Open", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)) {
+            item("Open Project", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)) {
+
+            }
+
+            item("Save Project", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)) {
+
+            }
+
+
+            separator()
+            item("Import Data", KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
-                        .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
+                        .doOnNext { logger.debug { "'Import Data' Dialog clicked" } }
                         .flatMap { fileIOService.openFileDialog() }
                         .map(this@MenuBarView::registerSpreadSheet)
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
