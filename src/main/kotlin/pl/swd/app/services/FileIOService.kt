@@ -33,8 +33,8 @@ class FileIOService {
      * Saves an object in JSON format to a file
      * If a file exists it overrides its content
      */
-    fun <T> saveAsJsonToFile(project: T, fileName: String) {
-        val jsonData = gson.toJson(project)
+    fun <T> saveAsJsonToFile(data: T, fileName: String) {
+        val jsonData = gson.toJson(data)
 
         File(fileName).apply {
             writeText(jsonData)

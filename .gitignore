@@ -1,6 +1,8 @@
 target
 .idea/sonarlint
 .idea/markdown-navigator
+*.sa
+*.sap
 
 *.log
 

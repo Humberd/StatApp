@@ -8,7 +8,7 @@ import tornadofx.*
 class Project(name: String,
               val spreadSheetList: ObservableList<SpreadSheet> = emptyObservableList()) {
     val nameProperty = SimpleStringProperty(name)
-    val name by nameProperty
+    var name by nameProperty
 
     fun addSpreadSheet(spreadSheet: SpreadSheet) {
         spreadSheetList.add(spreadSheet)

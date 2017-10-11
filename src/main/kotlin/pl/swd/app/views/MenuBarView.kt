@@ -20,11 +20,6 @@ class MenuBarView : View("My View") {
     val fileIOService: FileIOService by di()
     val dataFileParserService: DataFileParserService by di()
 
-    init {
-        // todo only for debugging purposes, remove this file
-        registerSpreadSheet(File(fileIOService.getCurrentDirectory() + "/testFile.txt"))
-    }
-
     override val root = menubar {
         menu("File") {
             item("Open", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)) {
@@ -47,8 +42,8 @@ class MenuBarView : View("My View") {
 
         projectService.currentProject.value.apply {
             /*Can only register a spreadsheet when currentProject exists*/
-            if (!isPresent) {
-                throw ProjectDoesNotExistException()
+            if (!isPresent()) {
+                throw ProjectDoesNotExistException("Cannot register spreadsheet, because Project does not exist")
             }
 
             val dataTable = dataFileParserService.generateDataTable(file)

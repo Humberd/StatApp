@@ -8,7 +8,7 @@ import pl.swd.app.utils.emptyOptional
 import java.util.*
 
 /**
- * This Service holds a currentProject state
+ * Holds a currentProject state
  */
 @Service
 open class ProjectService {
@@ -16,7 +16,7 @@ open class ProjectService {
      * Starting a behaviour subject with empty Project.
      * Need to wrap Project in Optional, because BehaviourSubject doesn't allow null
      */
-    val currentProject: BehaviorSubject<Optional<Project>> = BehaviorSubject.createDefault(Project("Empty Project").asOptional())
+    val currentProject: BehaviorSubject<Optional<Project>> = BehaviorSubject.createDefault(emptyOptional())
 
     /**
      * Emits given project as a current Project
