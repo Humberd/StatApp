@@ -33,6 +33,8 @@ open class ProjectSaverService : Savable {
         fileIOService.saveAsJsonToFile(
                 data = project,
                 fileName = getProjectNameWithExtension(project.name))
+
+        configService.currentConfig.value.lastOpenedProjectName = project.name
     }
 
     /**

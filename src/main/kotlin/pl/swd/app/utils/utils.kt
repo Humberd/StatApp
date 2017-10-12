@@ -4,7 +4,10 @@ import javafx.collections.ObservableList
 import javafx.scene.control.ListView
 import javafx.scene.input.MouseEvent
 import tornadofx.*
+import java.lang.reflect.Type
 import java.util.*
+import kotlin.reflect.KClass
+import kotlin.reflect.jvm.jvmName
 
 /**
  * Returns empty ObservableList
@@ -32,4 +35,8 @@ fun <T> ListView<T>.onItemClick(action: (T) -> Unit) {
             action(selectedItem!!)
         }
     }
+}
+
+fun Type.isInstanceOf(clazz: KClass<*>): Boolean {
+    return this.typeName.equals(clazz.qualifiedName)
 }

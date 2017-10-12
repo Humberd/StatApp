@@ -8,6 +8,7 @@ import pl.swd.app.services.ConfigSaverService
 import pl.swd.app.services.ProjectSaverService
 import java.io.FileNotFoundException
 import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 
 @Configuration
 open class InitConfiguration {
@@ -18,9 +19,16 @@ open class InitConfiguration {
 
     @PostConstruct
     private fun init() {
-        logger.debug { "Initializing Stat App's Config" }
-        this.loadConfig();
+        logger.info { "Initializing Stat App" }
+        this.loadConfig()
         this.loadProject()
+    }
+
+    @PreDestroy
+    private fun destroy() {
+        logger.info { "Shutting down Stat App" }
+        // todo check why not saving
+        configSaverService.saveToFile()
     }
 
     private fun loadConfig() {
