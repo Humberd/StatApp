@@ -16,13 +16,9 @@ open class InitConfiguration {
     @Autowired lateinit var configSaverService: ConfigSaverService
     @Autowired lateinit var projectSaverService: ProjectSaverService
 
-    init {
-        logger.debug { "Initializing Stat App's Config" }
-
-    }
-
     @PostConstruct
     private fun init() {
+        logger.debug { "Initializing Stat App's Config" }
         this.loadConfig();
         this.loadProject()
     }
@@ -31,6 +27,7 @@ open class InitConfiguration {
         try {
             configSaverService.loadFromFile()
         } catch (ex: FileNotFoundException) {
+            logger.debug { ex.message }
             configSaverService.loadDefaultConfig()
             configSaverService.saveToFile()
         }
@@ -40,6 +37,7 @@ open class InitConfiguration {
         try {
             projectSaverService.loadFromFile()
         } catch (ex: ValueNotInitializedException) {
+            logger.debug { ex.message }
             projectSaverService.loadDefaultProject()
         }
     }
