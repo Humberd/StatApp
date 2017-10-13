@@ -44,9 +44,13 @@ open class InitConfiguration {
     private fun loadProject() {
         try {
             projectSaverService.loadFromFile()
-        } catch (ex: ValueNotInitializedException) {
+        } catch (ex: Exception) {
             logger.debug { ex.message }
-            projectSaverService.loadDefaultProject()
+            when (ex) {
+                is ValueNotInitializedException,
+                is FileNotFoundException -> projectSaverService.loadDefaultProject()
+                else -> throw ex
+            }
         }
     }
 }

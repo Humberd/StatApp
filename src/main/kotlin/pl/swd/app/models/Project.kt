@@ -7,7 +7,6 @@ import tornadofx.*
 
 class Project(name: String,
               val spreadSheetList: ObservableList<SpreadSheet> = emptyObservableList()) {
-    @Transient
     val nameProperty = SimpleStringProperty(name)
     var name by nameProperty
 
