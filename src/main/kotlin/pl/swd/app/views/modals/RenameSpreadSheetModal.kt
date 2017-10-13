@@ -1,4 +1,4 @@
-package pl.swd.app.views.modals;
+package pl.swd.app.views.modals
 
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
@@ -6,7 +6,7 @@ import mu.KLogging
 import pl.swd.app.models.SpreadSheet
 import tornadofx.*
 
-class RenameSpreadSheetModal : Fragment("Rename SpreadSheet") {
+class RenameSpreadSheetModal : Modal("Rename SpreadSheet") {
     companion object : KLogging()
 
     val spreadSheet: SpreadSheet by param()
@@ -37,16 +37,21 @@ class RenameSpreadSheetModal : Fragment("Rename SpreadSheet") {
         }
     }
 
+    override fun onDelete() {
+        super.onDelete()
+        println("DELETED")
+    }
+
     override fun onDock() {
-        logger.debug { "Opening a Rename SpreadSheet Modal: '${spreadSheet.name}'" }
+        logger.debug { "Opening a ${this.javaClass.simpleName} with: name = '${spreadSheet.name}'" }
     }
 
     override fun onUndock() {
-        logger.debug { "Closing a Rename SpreadSheet Modal: '${spreadSheet.name}'" }
+        logger.debug { "Closing a ${this.javaClass.simpleName} with: name = '${spreadSheet.name}'" }
     }
 
     private fun save() {
-        logger.debug { "Changed SpreadSheet name from: '${spreadSheet.name}' to: '${model.name.value}'" }
+        logger.debug { "Updated SpreadSheet name from: '${spreadSheet.name}' to: '${model.name.value}'" }
         model.commit()
         close()
     }

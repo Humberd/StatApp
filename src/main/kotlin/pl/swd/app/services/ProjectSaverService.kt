@@ -6,12 +6,11 @@ import org.springframework.stereotype.Service
 import pl.swd.app.exceptions.ConfigDoesNotExistException
 import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.exceptions.ValueNotInitializedException
-import pl.swd.app.interfaces.Savable
 import pl.swd.app.models.Project
 
 @Service
-open class ProjectSaverService : Savable {
-    companion object: KLogging()
+open class ProjectSaverService {
+    companion object : KLogging()
 
     @Autowired private lateinit var fileIOService: FileIOService
     @Autowired private lateinit var projectService: ProjectService
@@ -19,17 +18,17 @@ open class ProjectSaverService : Savable {
     @Autowired private lateinit var configService: ConfigService
 
     /**
-     * Saves current project to a file with a name of project name
+     * Saves current project to a file with a saveFilePath of project saveFilePath
      */
-    override fun saveToFile() {
+    fun saveToFile() {
         val project = projectService.currentProject.value.apply {
             if (!isPresent()) {
                 throw ProjectDoesNotExistException("Cannot save app state, because a project does not exist")
             }
         }.get()
 
-        /* When there is no assigned file name then we need to ask user about it*/
-        if (project.assignedFileName === null) {
+        /* When there is no assigned file saveFilePath then we need to ask user about it*/
+        if (project.saveFilePath.isEmpty()) {
 
         }
 
@@ -41,9 +40,9 @@ open class ProjectSaverService : Savable {
     }
 
     /**
-     * Loads a project from a file with a name saved in a live configs file
+     * Loads a project from a file with a saveFilePath saved in a live configs file
      */
-    override fun loadFromFile() {
+    fun loadFromFile() {
         logger.debug { "Loading Project from file: [${configService.currentConfig.value?.lastOpenedProjectFileName}]" }
         val lastOpenedProjectName = configService.currentConfig.value.apply {
             if (this == null) {

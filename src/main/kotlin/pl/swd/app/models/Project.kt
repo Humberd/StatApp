@@ -1,4 +1,4 @@
-package pl.swd.app.models;
+package pl.swd.app.models
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
@@ -12,7 +12,8 @@ class Project(name: String,
     var name by nameProperty
 
     /* File, which this project was saved to */
-    val assignedFileName: String? = null
+    val saveFilePathProperty = SimpleStringProperty()
+    val saveFilePath by saveFilePathProperty
 
     fun addSpreadSheet(spreadSheet: SpreadSheet) {
         spreadSheetList.add(spreadSheet)

@@ -6,16 +6,16 @@ import mu.KLogging
 import pl.swd.app.models.Project
 import tornadofx.*
 
-class RenameProjectModal : Modal("Rename Project") {
+class UpdateProjectSaveFilePathModal : Modal("Project File") {
     companion object : KLogging()
 
     val project: Project by param()
     val model = ProjectViewModel(project)
 
     override val root = form {
-        fieldset("Choose the Project name") {
-            field("Name") {
-                textfield(model.name).requestFocus()
+        fieldset("Where do you want to save the Project?") {
+            field("File Name") {
+                textfield(model.saveFileName).requestFocus()
             }
         }
 
@@ -38,20 +38,20 @@ class RenameProjectModal : Modal("Rename Project") {
     }
 
     override fun onDock() {
-        logger.debug { "Opening a ${this.javaClass.simpleName} with: name = '${project.name}'" }
+        logger.debug { "Opening an ${this.javaClass.simpleName} with: saveFilePath = '${project.saveFilePath}'" }
     }
 
     override fun onUndock() {
-        logger.debug { "Closing a ${this.javaClass.simpleName} with: name = '${project.name}'" }
+        logger.debug { "Closing an ${this.javaClass.simpleName} with: saveFilePath = '${project.saveFilePath}'" }
     }
 
     private fun save() {
-        logger.debug { "Updated Project name from: '${project.name}' to: '${model.name.value}'" }
+        logger.debug { "Updated Project saveFilePath from: '${project.saveFilePath}' to: '${model.saveFileName.value}'" }
         model.commit()
         close()
     }
 
     class ProjectViewModel(var project: Project) : ViewModel() {
-        val name = bind { project.nameProperty }
+        val saveFileName = bind { project.saveFilePathProperty }
     }
 }
