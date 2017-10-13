@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.1.51</kotlin.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>5.0.1</junit.version>
         <tornadofx.version>1.7.11</tornadofx.version>
         <rxkotlinfx.version>2.2.0</rxkotlinfx.version>
         <rxkotlin.version>2.1.0</rxkotlin.version>
@@ -49,10 +49,9 @@
             <version>${kotlin-logging.version}</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>RELEASE</version>
         </dependency>
 
         <dependency>
