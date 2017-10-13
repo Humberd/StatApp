@@ -39,15 +39,18 @@ class RenameProjectModal : Modal("Rename Project") {
 
     override fun onDock() {
         logger.debug { "Opening a ${this.javaClass.simpleName} with: name = '${project.name}'" }
+        super.onDock()
     }
 
     override fun onUndock() {
         logger.debug { "Closing a ${this.javaClass.simpleName} with: name = '${project.name}'" }
+        super.onUndock()
     }
 
     private fun save() {
         logger.debug { "Updated Project name from: '${project.name}' to: '${model.name.value}'" }
         model.commit()
+        status = ModalStatus.COMPLETED
         close()
     }
 

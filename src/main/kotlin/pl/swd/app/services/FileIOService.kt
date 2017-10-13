@@ -7,7 +7,7 @@ import javafx.stage.FileChooser
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tornadofx.*
+import tornadofx.chooseFile
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -22,11 +22,21 @@ class FileIOService {
     /**
      * Opens a new window with an option of choosing a file
      */
-    fun openFileDialog(title: String = "OpenFile", fileExtensions: Array<FileChooser.ExtensionFilter> = openFileExtensions): Observable<File> {
+    fun openFileDialog(title: String = "Open File",
+                       fileExtensions: Array<FileChooser.ExtensionFilter> = openFileExtensions,
+                       initialDirectory: String = getCurrentDirectory()): Observable<File> {
         return chooseFile(title = title, filters = fileExtensions) {
-            initialDirectory = File(getCurrentDirectory())
+            this.initialDirectory = File(initialDirectory)
         }.toObservable()
                 .doOnNext { logger.debug { "Selected file: ${it.name}" } }
+    }
+
+    // todo finish this
+    fun chooseFileDialog(title: String = "Choose File"): Observable<File> {
+        return chooseFile(title, filters = emptyArray()) {
+            initialDirectory = File(getCurrentDirectory())
+
+        }.toObservable()
     }
 
     /**

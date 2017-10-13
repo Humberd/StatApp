@@ -24,10 +24,13 @@ open class InitConfiguration {
         this.loadProject()
     }
 
-    @PreDestroy
-    private fun destroy() {
+
+    /**
+     * This method is invoked by StartApp itself right before the app life ends
+     */
+    fun destroy() {
         logger.info { "Shutting down Stat App" }
-        // todo check why not saving
+
         configSaverService.saveToFile()
     }
 

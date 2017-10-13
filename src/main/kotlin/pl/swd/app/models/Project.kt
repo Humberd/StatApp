@@ -12,8 +12,8 @@ class Project(name: String,
     var name by nameProperty
 
     /* File, which this project was saved to */
-    val saveFilePathProperty = SimpleStringProperty()
-    val saveFilePath by saveFilePathProperty
+    val saveFilePathProperty = SimpleStringProperty("")
+    var saveFilePath by saveFilePathProperty
 
     fun addSpreadSheet(spreadSheet: SpreadSheet) {
         spreadSheetList.add(spreadSheet)

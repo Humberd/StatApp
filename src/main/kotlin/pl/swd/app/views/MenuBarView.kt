@@ -30,9 +30,14 @@ class MenuBarView : View("My View") {
                         .subscribe { projectSaverService.loadFromFile() }
             }
 
-            item("Save Project", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)) {
+            item("Save Project", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
                         .subscribe { projectSaverService.saveToFile() }
+            }
+
+            item("Save Project As", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)) {
+                actionEvents()
+                        .subscribe { projectSaverService.saveToFile(askUserForPath = true) }
             }
 
 

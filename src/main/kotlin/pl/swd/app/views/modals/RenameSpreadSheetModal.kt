@@ -6,14 +6,14 @@ import mu.KLogging
 import pl.swd.app.models.SpreadSheet
 import tornadofx.*
 
-class RenameSpreadSheetModal : Modal("Rename SpreadSheet") {
+class RenameSpreadSheetModal : Modal("SpreadSheet") {
     companion object : KLogging()
 
     val spreadSheet: SpreadSheet by param()
     val model = SpreadSheetViewModel(spreadSheet)
 
     override val root = form {
-        fieldset("SpreadSheet") {
+        fieldset("Choose a new file for the SpreadSheet") {
             field("Name") {
                 textfield(model.name).requestFocus()
             }
@@ -37,22 +37,20 @@ class RenameSpreadSheetModal : Modal("Rename SpreadSheet") {
         }
     }
 
-    override fun onDelete() {
-        super.onDelete()
-        println("DELETED")
-    }
-
     override fun onDock() {
         logger.debug { "Opening a ${this.javaClass.simpleName} with: name = '${spreadSheet.name}'" }
+        super.onDock()
     }
 
     override fun onUndock() {
         logger.debug { "Closing a ${this.javaClass.simpleName} with: name = '${spreadSheet.name}'" }
+        super.onUndock()
     }
 
     private fun save() {
         logger.debug { "Updated SpreadSheet name from: '${spreadSheet.name}' to: '${model.name.value}'" }
         model.commit()
+        status = ModalStatus.COMPLETED
         close()
     }
 

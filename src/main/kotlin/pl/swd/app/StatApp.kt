@@ -4,6 +4,7 @@ import javafx.application.Application
 import javafx.stage.Stage
 import mu.KLogging
 import org.springframework.context.support.ClassPathXmlApplicationContext
+import pl.swd.app.configs.InitConfiguration
 import pl.swd.app.views.MainView
 import tornadofx.*
 import kotlin.reflect.KClass
@@ -38,6 +39,13 @@ class StatApp : App(MainView::class) {
 
             centerOnScreen()
         }
+    }
+
+    override fun stop() {
+        val initConfiguration = FX.dicontainer?.getInstance(InitConfiguration::class)
+        initConfiguration?.destroy()
+
+        super.stop()
     }
 }
 
