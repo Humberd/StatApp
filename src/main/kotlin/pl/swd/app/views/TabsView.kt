@@ -6,7 +6,7 @@ import pl.swd.app.models.SpreadSheet
 import tornadofx.*
 
 class TabsView : View("My View") {
-    companion object: KLogging()
+    companion object : KLogging()
 
     override val root = TabPane()
 
@@ -25,7 +25,9 @@ class TabsView : View("My View") {
         * And passes a tabInput to it*/
         tabWrapper.renameMenuItem.setOnAction {
             find(RenameTabModal::class, mapOf(RenameTabModal::tabInput to tabWrapper))
-                    .openModal()
+                    .openModal()?.setOnCloseRequest {
+                println(it)
+            }
         }
 
         /*When closing a tab it should set a flag not to auto open it anymore*/

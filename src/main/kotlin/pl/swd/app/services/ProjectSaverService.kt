@@ -34,21 +34,21 @@ open class ProjectSaverService : Savable {
                 data = project,
                 fileName = getProjectNameWithExtension(project.name))
 
-        configService.currentConfig.value.lastOpenedProjectName = project.name
+        configService.currentConfig.value.lastOpenedProjectFileName = project.name
     }
 
     /**
      * Loads a project from a file with a name saved in a live configs file
      */
     override fun loadFromFile() {
-        logger.debug { "Loading Project from file: [${configService.currentConfig.value?.lastOpenedProjectName}]" }
+        logger.debug { "Loading Project from file: [${configService.currentConfig.value?.lastOpenedProjectFileName}]" }
         val lastOpenedProjectName = configService.currentConfig.value.apply {
             if (this == null) {
                 throw ConfigDoesNotExistException("Cannot load project from file, because Config does not exist")
             }
-        }.lastOpenedProjectName.apply {
+        }.lastOpenedProjectFileName.apply {
             if (this == null) {
-                throw ValueNotInitializedException("Value 'lastOpenedProjectName' is not set in a Config. Aborting loading project from a file")
+                throw ValueNotInitializedException("Value 'lastOpenedProjectFileName' is not set in a Config. Aborting loading project from a file")
             }
         }!! // i force anti null, because I already validated it above
 

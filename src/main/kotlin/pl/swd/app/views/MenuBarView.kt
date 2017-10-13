@@ -1,6 +1,7 @@
 package pl.swd.app.views;
 
 import com.github.thomasnield.rxkotlinfx.actionEvents
+import io.reactivex.Observable
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
