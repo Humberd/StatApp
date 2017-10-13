@@ -10,10 +10,10 @@ class RenameProjectModal : Fragment("Rename Project") {
     companion object : KLogging()
 
     val project: Project by param()
-    val model = PorjectViewModel(project)
+    val model = ProjectViewModel(project)
 
     override val root = form {
-        fieldset("SpreadSheet") {
+        fieldset("Project") {
             field("Name") {
                 textfield(model.name).requestFocus()
             }
@@ -38,20 +38,20 @@ class RenameProjectModal : Fragment("Rename Project") {
     }
 
     override fun onDock() {
-        logger.debug { "Opening a Rename SpreadSheet Modal: '${project.name}'" }
+        logger.debug { "Opening a Rename Project Modal: '${project.name}'" }
     }
 
     override fun onUndock() {
-        logger.debug { "Closing a Rename SpreadSheet Modal: '${project.name}'" }
+        logger.debug { "Closing a Rename Project Modal: '${project.name}'" }
     }
 
     private fun save() {
-        logger.debug { "Changed SpreadSheet name from: '${project.name}' to: '${model.name.value}'" }
+        logger.debug { "Changed Project name from: '${project.name}' to: '${model.name.value}'" }
         model.commit()
         close()
     }
 
-    class PorjectViewModel(var project: Project) : ViewModel() {
+    class ProjectViewModel(var project: Project) : ViewModel() {
         val name = bind { project.nameProperty }
     }
 }
