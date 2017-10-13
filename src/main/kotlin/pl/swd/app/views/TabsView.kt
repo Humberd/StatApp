@@ -2,6 +2,7 @@ package pl.swd.app.views;
 
 import javafx.scene.control.TabPane
 import mu.KLogging
+import pl.swd.app.views.modals.RenameSpreadSheetModal
 import pl.swd.app.models.SpreadSheet
 import tornadofx.*
 
@@ -22,12 +23,10 @@ class TabsView : View("My View") {
         root.selectionModel.select(tabWrapper)
 
         /*When clicking a "Rename" in a context menu it opens a RenameModal
-        * And passes a tabInput to it*/
+        * And passes a spreadSheet to it*/
         tabWrapper.renameMenuItem.setOnAction {
-            find(RenameTabModal::class, mapOf(RenameTabModal::tabInput to tabWrapper))
-                    .openModal()?.setOnCloseRequest {
-                println(it)
-            }
+            find(RenameSpreadSheetModal::class, mapOf(RenameSpreadSheetModal::spreadSheet to spreadSheet))
+                    .openModal()
         }
 
         /*When closing a tab it should set a flag not to auto open it anymore*/

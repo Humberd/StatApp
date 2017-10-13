@@ -7,8 +7,12 @@ import tornadofx.*
 
 class Project(name: String,
               val spreadSheetList: ObservableList<SpreadSheet> = emptyObservableList()) {
+    /* Name of the project*/
     val nameProperty = SimpleStringProperty(name)
     var name by nameProperty
+
+    /* File, which this project was saved to */
+    val assignedFileName: String? = null
 
     fun addSpreadSheet(spreadSheet: SpreadSheet) {
         spreadSheetList.add(spreadSheet)

@@ -18,17 +18,20 @@ open class ProjectSaverService : Savable {
     @Autowired private lateinit var applicationPropertiesService: ApplicationPropertiesService
     @Autowired private lateinit var configService: ConfigService
 
-
     /**
      * Saves current project to a file with a name of project name
      */
     override fun saveToFile() {
-        logger.debug { "Saving Project fo file: [${projectService.currentProject.value.get()?.name}]" }
         val project = projectService.currentProject.value.apply {
             if (!isPresent()) {
                 throw ProjectDoesNotExistException("Cannot save app state, because a project does not exist")
             }
         }.get()
+
+        /* When there is no assigned file name then we need to ask user about it*/
+        if (project.assignedFileName === null) {
+
+        }
 
         fileIOService.saveAsJsonToFile(
                 data = project,

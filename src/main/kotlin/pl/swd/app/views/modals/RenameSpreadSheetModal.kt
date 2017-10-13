@@ -1,21 +1,21 @@
-package pl.swd.app.views;
+package pl.swd.app.views.modals;
 
-import javafx.scene.control.Tab
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
+import pl.swd.app.models.SpreadSheet
 import tornadofx.*
 
-class RenameTabModal : Fragment("Rename TabWrapper") {
+class RenameSpreadSheetModal : Fragment("Rename SpreadSheet") {
     companion object : KLogging()
 
-    val tabInput: Tab by param()
-    val model = TabViewModel(tabInput)
+    val spreadSheet: SpreadSheet by param()
+    val model = SpreadSheetViewModel(spreadSheet)
 
     override val root = form {
-        fieldset("TabWrapper Info") {
-            field("TabWrapper Name") {
-                textfield(model.tabName).requestFocus()
+        fieldset("SpreadSheet") {
+            field("Name") {
+                textfield(model.name).requestFocus()
             }
         }
 
@@ -38,21 +38,21 @@ class RenameTabModal : Fragment("Rename TabWrapper") {
     }
 
     override fun onDock() {
-        logger.debug { "Opening a Rename TabWrapper Modal: '${tabInput.text}'" }
+        logger.debug { "Opening a Rename SpreadSheet Modal: '${spreadSheet.name}'" }
     }
 
     override fun onUndock() {
-        logger.debug { "Closing a Rename TabWrapper Modal: '${tabInput.text}'" }
+        logger.debug { "Closing a Rename SpreadSheet Modal: '${spreadSheet.name}'" }
     }
 
     private fun save() {
-        logger.debug { "Changed tab name from: '${tabInput.text}' to: '${model.tabName.value}'" }
+        logger.debug { "Changed SpreadSheet name from: '${spreadSheet.name}' to: '${model.name.value}'" }
         model.commit()
         close()
     }
 
-    class TabViewModel(var tab: Tab) : ViewModel() {
-        val tabName = bind { tab.textProperty() }
+    class SpreadSheetViewModel(var spreadSheet: SpreadSheet) : ViewModel() {
+        val name = bind { spreadSheet.nameProperty }
     }
 }
 // todo https://github.com/edvin/tornadofx/wiki/ViewModel
