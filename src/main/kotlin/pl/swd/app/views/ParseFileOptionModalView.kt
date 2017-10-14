@@ -114,14 +114,14 @@ class ParseFileOptionModalView: Fragment("Rename Column"), GetResultFragment<Str
     }
 
     override fun onDock() {
-        RenameTabModal.logger.debug { "Opening a Rename ParseFileOptionModalView Modal" }
+        logger.debug { "Opening a Rename ParseFileOptionModalView Modal" }
 
         this.modalStage!!.width = 300.0
         this.modalStage!!.height = 150.0
     }
 
     override fun onUndock() {
-        RenameTabModal.logger.debug { "Closing a Rename ParseFileOptionModalView Modal" }
+        logger.debug { "Closing a Rename ParseFileOptionModalView Modal" }
     }
 
     override fun getResultList(): Optional<List<String>> {

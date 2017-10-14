@@ -1,7 +1,5 @@
 package pl.swd.app.views
 
-import javafx.scene.Parent
-import javafx.scene.control.SelectionMode
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
@@ -9,7 +7,6 @@ import pl.swd.app.interfaces.GetResultFragment
 import pl.swd.app.utils.asOptional
 import tornadofx.*
 import java.util.*
-import javax.swing.GroupLayout
 
 class GetColumnNameView: Fragment("Column name"), GetResultFragment<String> {
     companion object : KLogging()
@@ -45,11 +42,11 @@ class GetColumnNameView: Fragment("Column name"), GetResultFragment<String> {
     }
 
     override fun onDock() {
-        RenameTabModal.logger.debug { "Opening a GetColumnNameView" }
+        logger.debug { "Opening a GetColumnNameView" }
     }
 
     override fun onUndock() {
-        RenameTabModal.logger.debug { "Closing a GetColumnNameView with column name: '${textField.text}'" }
+        logger.debug { "Closing a GetColumnNameView with column name: '${textField.text}'" }
     }
 
     override fun getResult(): Optional<String> {
