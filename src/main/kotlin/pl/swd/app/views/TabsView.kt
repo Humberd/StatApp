@@ -32,4 +32,8 @@ class TabsView : View("My View") {
         /*When closing a tab it should set a flag not to auto open it anymore*/
         tabWrapper.setOnClosed { tabWrapper.spreadSheet.autoOpenTabOnLoad = false }
     }
+
+    fun clearTabs() {
+        root.tabs.clear()
+    }
 }
