@@ -8,11 +8,12 @@ import pl.swd.app.models.DataTable
 import pl.swd.app.models.DataValue
 import tornadofx.*
 import java.io.File
+import io.reactivex.Observable
 
 @Service
 class DataFileParserService {
-    fun generateDataTable(file: File): DataTable {
-        return parseFile(file)
+    fun generateDataTable(pair: Pair<File, List<String>>): DataTable {
+        return parseFile(pair)
     }
 
     fun generateMockDataTable(): DataTable {
@@ -31,8 +32,8 @@ class DataFileParserService {
                 columns = arrayListOf(idColumn, nameColumn).observable())
     }
 
-    private fun parseFile(file: File): DataTable {
-        val inputStream = file.inputStream()
+    private fun parseFile(pair: Pair<File, List<String>>): DataTable {
+        val inputStream = pair.first.inputStream()
         var lineList = mutableListOf<String>()
         val separatorRegex = Regex("[\\s;]")
         var colums = mutableListOf<DataColumn>()
@@ -43,9 +44,23 @@ class DataFileParserService {
         //Remove coomented lines
         lineList = lineList.filter { (!it.startsWith("#") && !it.isEmpty()) }.toMutableList()
 
-        //Split columns name
-        colums = lineList.first().split(separatorRegex).map { DataColumn(it, ArrayList()) }.toMutableList()
-        lineList.removeAt(0)
+
+        if (pair.second.isEmpty()) {
+            //Split columns name
+            colums = lineList.first().split(separatorRegex).map { DataColumn(it, ArrayList()) }.toMutableList()
+            lineList.removeAt(0)
+        } else {
+            val values = lineList.first().split(separatorRegex)
+            colums = pair.second.map { DataColumn(it, ArrayList()) }.toMutableList()
+
+            if (colums.size > values.size) {
+                colums = colums.subList(0,values.size)
+            } else if (colums.size < values.size){
+                for (i in values.indices.minus(colums.size)) {
+                    colums.add(DataColumn(i.toString(), ArrayList()))
+                }
+            }
+        }
 
         //parse row data
         lineList.forEach {
