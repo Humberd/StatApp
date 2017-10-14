@@ -21,7 +21,7 @@ class LeftDrawer : View("Drawer") {
                 /*Subscribes to a current project and binds its spreadsheetsList to listview items*/
                 projectService.currentProject
                         .map { currentProject ->
-                            if (!currentProject.isPresent()) {
+                            if (!currentProject.isPresent) {
                                 logger.debug { "No Current Project - setting empty SpreadSheets list" }
                                 return@map emptyObservableList<SpreadSheet>()
                             }
@@ -29,11 +29,7 @@ class LeftDrawer : View("Drawer") {
                             logger.debug { "Found New Project '${currentProject.get().name}' - binding SpreadSheets list" }
                             return@map currentProject.get().spreadSheetList
                         }
-                        /* Binding ObservableList of Spreadsheets to a drawer list */
                         .doOnNext { items = it }
-                        /* When receiving a new project I need to clear tabs list */
-                        // todo move it to tabsView?
-                        .doOnNext { tabsView.clearTabs() }
                         /*Checking if a speadsheet should be opened in a tab*/
                         // todo: move it somewhere else?
                         // todo: onChangedObservable emits list of all speadsheets instead of only the added one
