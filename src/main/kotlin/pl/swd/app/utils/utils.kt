@@ -4,10 +4,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.ListView
 import javafx.scene.input.MouseEvent
 import tornadofx.*
-import java.lang.reflect.Type
 import java.util.*
-import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 
 /**
  * Returns empty ObservableList
@@ -21,7 +18,6 @@ inline fun <reified T> emptyObservableList(): ObservableList<T> {
  * Any object can be transformed to an optional
  */
 fun <T> T?.asOptional() = Optional.ofNullable(this)
-
 fun <T> emptyOptional(): Optional<T> = Optional.empty()
 
 
@@ -36,15 +32,4 @@ fun <T> ListView<T>.onItemClick(action: (T) -> Unit) {
             action(selectedItem!!)
         }
     }
-}
-
-fun Type.isInstanceOf(clazz: KClass<*>): Boolean {
-    return this.typeName.equals(clazz.qualifiedName)
-}
-
-/**
- * Indicates if a class is inherits from or implement interaces directly or indirectly.
- */
-fun Class<*>.isSubclassOf(clazz: Class<*>): Boolean {
-    return this.kotlin.isSubclassOf(clazz.kotlin)
 }
