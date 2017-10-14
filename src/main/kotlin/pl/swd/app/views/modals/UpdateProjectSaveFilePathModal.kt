@@ -1,21 +1,37 @@
 package pl.swd.app.views.modals
 
+import com.github.thomasnield.rxkotlinfx.actionEvents
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
 import pl.swd.app.models.Project
+import pl.swd.app.services.FileIOService
 import tornadofx.*
 
 class UpdateProjectSaveFilePathModal : Modal("Project File") {
     companion object : KLogging()
+
+    val fileIOService: FileIOService by di()
 
     val project: Project by param()
     val model = ProjectViewModel(project)
 
     override val root = form {
         fieldset("Where do you want to save the Project?") {
-            field("File Name") {
+            field("Path") {
                 textfield(model.saveFilePath).requestFocus()
+                button("Browse") {
+                    this@button.actionEvents()
+                            .flatMap {
+                                fileIOService.openFileDialogObs(
+                                        title = "Choose File",
+                                        fileExtensions = fileIOService.projectFileExtensions,
+                                        initialDirectory = model.saveFilePath.value,
+                                        mode = FileChooserMode.Save
+                                ).take(1)
+                            }
+                            .subscribe { model.saveFilePath.value = it.absolutePath }
+                }
             }
         }
 

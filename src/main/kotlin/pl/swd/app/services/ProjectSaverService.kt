@@ -71,7 +71,7 @@ open class ProjectSaverService {
             logger.debug { "Asking user for a path. Showing a modal." }
             path = fileIOService.openFileDialog(
                     title = "Choose a Project",
-                    fileExtensions = arrayOf(FileChooser.ExtensionFilter("StatApp Project", "*.sap")))
+                    fileExtensions = fileIOService.projectFileExtensions)
                     .let {
                         if (it.size == 0) {
                             logger.debug { "User didn't choose any file. Aborting loadingFromFile..." }
