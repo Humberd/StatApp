@@ -22,13 +22,20 @@ class FileIOService {
     /**
      * Opens a new window with an option of choosing a file
      */
+    fun openFileDialogObs(title: String = "Open File",
+                          fileExtensions: Array<FileChooser.ExtensionFilter> = openFileExtensions,
+                          initialDirectory: String = getCurrentDirectory()): Observable<File> {
+        return openFileDialog(title, fileExtensions, initialDirectory)
+                .toObservable()
+                .doOnNext { logger.debug { "Selected file: ${it.name}" } }
+    }
+
     fun openFileDialog(title: String = "Open File",
                        fileExtensions: Array<FileChooser.ExtensionFilter> = openFileExtensions,
-                       initialDirectory: String = getCurrentDirectory()): Observable<File> {
+                       initialDirectory: String = getCurrentDirectory()): List<File> {
         return chooseFile(title = title, filters = fileExtensions) {
             this.initialDirectory = File(initialDirectory)
-        }.toObservable()
-                .doOnNext { logger.debug { "Selected file: ${it.name}" } }
+        }
     }
 
     // todo finish this

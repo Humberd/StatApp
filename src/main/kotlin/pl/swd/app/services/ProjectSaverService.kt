@@ -1,5 +1,6 @@
 package pl.swd.app.services;
 
+import javafx.stage.FileChooser
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -40,7 +41,7 @@ open class ProjectSaverService {
             }
 
             if (modal.status.isCancelled()) {
-                logger.debug { "User has cancelled providing a saveFilePath. Aborting savingToFile" }
+                logger.debug { "User has cancelled providing a saveFilePath. Aborting savingToFile..." }
                 return
             }
             /* Here we know user has successfully completed a modal and updated a provided model */
@@ -61,22 +62,42 @@ open class ProjectSaverService {
 
     /**
      * Loads a project from a file with a saveFilePath saved in a live configs file
+     * @param askUserForPath true - ask user for path
+     *                       false - get path from `lastOpenedProjectFilePath` from Config
      */
-    fun loadFromFile() {
-        logger.debug { "Loading Project from file: [${configService.currentConfig.value?.lastOpenedProjectFilePath}]" }
-        val lastOpenedProjectName = configService.currentConfig.value.apply {
-            if (this == null) {
-                throw ConfigDoesNotExistException("Cannot load project from file, because Config does not exist")
-            }
-        }.lastOpenedProjectFilePath.apply {
-            if (this == null) {
-                throw ValueNotInitializedException("Value 'lastOpenedProjectFilePath' is not set in a Config. Aborting loading project from a file")
-            }
-        }!! // i force anti null, because I already validated it above, but somehow IntelliJ doesn't see it
+    fun loadFromFile(askUserForPath: Boolean = false) {
+        val path: String
+        if (askUserForPath) {
+            logger.debug { "Asking user for a path. Showing a modal." }
+            path = fileIOService.openFileDialog(
+                    title = "Choose a Project",
+                    fileExtensions = arrayOf(FileChooser.ExtensionFilter("StatApp Project", "*.sap")))
+                    .let {
+                        if (it.size == 0) {
+                            logger.debug { "User didn't choose any file. Aborting loadingFromFile..." }
+                            return
+                        }
+                        it.get(0).absolutePath
+                    }
+        } else {
+            path = configService.currentConfig.value.apply {
+                if (this == null) {
+                    throw ConfigDoesNotExistException("Cannot load project from file, because Config does not exist")
+                }
+            }.lastOpenedProjectFilePath.apply {
+                if (this == null) {
+                    throw ValueNotInitializedException("Value 'lastOpenedProjectFilePath' is not set in a Config. Aborting loading project from a file")
+                }
+            }!! // i force anti null, because I already validated it above, but somehow IntelliJ doesn't see it
+        }
 
-        val project = fileIOService.getAsObjectFromJsonFile<Project>(lastOpenedProjectName)
+        logger.debug { "Loading Project from a file: [$path]" }
 
+        val project = fileIOService.getAsObjectFromJsonFile<Project>(path)
+        project.saveFilePath = path
         projectService.setCurrentProject(project)
+
+        configService.currentConfig.value.lastOpenedProjectFilePath = project.saveFilePath
     }
 
     fun loadDefaultProject() {

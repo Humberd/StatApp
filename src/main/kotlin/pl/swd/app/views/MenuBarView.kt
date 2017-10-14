@@ -1,7 +1,6 @@
 package pl.swd.app.views;
 
 import com.github.thomasnield.rxkotlinfx.actionEvents
-import io.reactivex.Observable
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
@@ -25,27 +24,27 @@ class MenuBarView : View("My View") {
 
     override val root = menubar {
         menu("File") {
-            item("Open Project", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)) {
+            item("Open...", KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
-                        .subscribe { projectSaverService.loadFromFile() }
+                        .subscribe { projectSaverService.loadFromFile(askUserForPath = true) }
             }
 
-            item("Save Project", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)) {
+            item("Save", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
                         .subscribe { projectSaverService.saveToFile() }
             }
 
-            item("Save Project As", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)) {
+            item("Save As", KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)) {
                 actionEvents()
                         .subscribe { projectSaverService.saveToFile(askUserForPath = true) }
             }
 
-
             separator()
+
             item("Import Data", KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
                         .doOnNext { logger.debug { "'Import Data' Dialog clicked" } }
-                        .flatMap { fileIOService.openFileDialog() }
+                        .flatMap { fileIOService.openFileDialogObs() }
                         .map(this@MenuBarView::registerSpreadSheet)
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
             }
