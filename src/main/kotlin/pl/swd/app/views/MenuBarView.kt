@@ -45,7 +45,7 @@ class MenuBarView : View("My View") {
             item("Import Data", KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
-                        .flatMap { fileIOService.openFileDialogObs() }
+                        .flatMap { fileIOService.chooseFileDialog() }
                         .map { file ->
                             val optionsView  = find<ParseDataFileOptionsModal>().apply { openModal(block = true) }
 
