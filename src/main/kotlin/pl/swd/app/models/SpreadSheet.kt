@@ -1,6 +1,5 @@
 package pl.swd.app.models;
 
-import com.google.gson.annotations.SerializedName
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*

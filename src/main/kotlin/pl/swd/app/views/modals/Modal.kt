@@ -15,4 +15,12 @@ abstract class Modal(title: String? = null, icon: Node? = null) : Fragment(title
         }
         super.onUndock()
     }
+
+    override fun onDock() {
+        currentWindow?.apply {
+            width = 500.0
+            centerOnScreen()
+        }
+        super.onDock()
+    }
 }

@@ -11,6 +11,7 @@ import pl.swd.app.services.DataFileParserService
 import pl.swd.app.services.FileIOService
 import pl.swd.app.services.ProjectSaverService
 import pl.swd.app.services.ProjectService
+import pl.swd.app.views.modals.RenameProjectModal
 import tornadofx.*
 import java.io.File
 
@@ -47,6 +48,13 @@ class MenuBarView : View("My View") {
                         .flatMap { fileIOService.openFileDialogObs() }
                         .map(this@MenuBarView::registerSpreadSheet)
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
+            }
+        }
+
+        menu("Project") {
+            item("Rename") {
+                actionEvents()
+                        .subscribe { projectService.renameProject() }
             }
         }
     }

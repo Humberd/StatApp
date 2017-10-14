@@ -15,7 +15,7 @@ class UpdateProjectSaveFilePathModal : Modal("Project File") {
     override val root = form {
         fieldset("Where do you want to save the Project?") {
             field("File Name") {
-                textfield(model.saveFileName).requestFocus()
+                textfield(model.saveFilePath).requestFocus()
             }
         }
 
@@ -28,7 +28,6 @@ class UpdateProjectSaveFilePathModal : Modal("Project File") {
             }
 
             button("Save") {
-                enableWhen(model.dirty)
                 shortcut(KeyCodeCombination(KeyCode.ENTER))
                 action {
                     save()
@@ -48,13 +47,13 @@ class UpdateProjectSaveFilePathModal : Modal("Project File") {
     }
 
     private fun save() {
-        logger.debug { "Updated Project saveFilePath from: '${project.saveFilePath}' to: '${model.saveFileName.value}'" }
+        logger.debug { "Updated Project saveFilePath from: '${project.saveFilePath}' to: '${model.saveFilePath.value}'" }
         model.commit()
         status = ModalStatus.COMPLETED
         close()
     }
 
     class ProjectViewModel(var project: Project) : ViewModel() {
-        val saveFileName = bind { project.saveFilePathProperty }
+        val saveFilePath = bind { project.saveFilePathProperty }
     }
 }
