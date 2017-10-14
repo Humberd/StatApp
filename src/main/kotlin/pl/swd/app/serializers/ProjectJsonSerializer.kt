@@ -2,11 +2,9 @@ package pl.swd.app.serializers
 
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.obj
 import com.google.gson.*
 import pl.swd.app.models.Project
 import java.lang.reflect.Type
-import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 
 object ProjectJsonSerializer : JsonSerializer<Project>, JsonDeserializer<Project> {

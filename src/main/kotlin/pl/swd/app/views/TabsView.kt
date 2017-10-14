@@ -2,8 +2,8 @@ package pl.swd.app.views;
 
 import javafx.scene.control.TabPane
 import mu.KLogging
-import pl.swd.app.views.modals.RenameSpreadSheetModal
 import pl.swd.app.models.SpreadSheet
+import pl.swd.app.views.modals.RenameSpreadSheetModal
 import tornadofx.*
 
 class TabsView : View("My View") {

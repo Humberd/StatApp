@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.*
 import pl.swd.app.models.SpreadSheet
 import java.lang.reflect.Type
-import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 
 object SpreadSheetJsonSerializer : JsonSerializer<SpreadSheet>, JsonDeserializer<SpreadSheet> {

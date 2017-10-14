@@ -9,7 +9,7 @@ import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.exceptions.ValueNotInitializedException
 import pl.swd.app.models.Project
 import pl.swd.app.views.modals.UpdateProjectSaveFilePathModal
-import tornadofx.find
+import tornadofx.*
 
 @Service
 open class ProjectSaverService {

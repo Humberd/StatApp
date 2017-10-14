@@ -1,7 +1,7 @@
 package pl.swd.app.views.modals
 
 import javafx.scene.Node
-import tornadofx.Fragment
+import tornadofx.*
 
 abstract class Modal(title: String? = null, icon: Node? = null) : Fragment(title, icon) {
     /**

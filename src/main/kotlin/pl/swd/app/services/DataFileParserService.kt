@@ -58,7 +58,7 @@ class DataFileParserService {
             }
 
             //Adding values to respective objects
-            for(i in values.indices) {
+            for (i in values.indices) {
                 colums[i].columnValuesList.add(DataValue(values[i]))
                 rowMap.put(colums[i].name, DataValue(values[i]))
             }

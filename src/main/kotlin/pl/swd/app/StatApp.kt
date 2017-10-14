@@ -10,7 +10,7 @@ import tornadofx.*
 import kotlin.reflect.KClass
 
 class StatApp : App(MainView::class) {
-    companion object: KLogging()
+    companion object : KLogging()
 
     /**
      * Here I'm initializing a Spring application context,

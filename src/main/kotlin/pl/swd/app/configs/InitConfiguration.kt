@@ -8,7 +8,6 @@ import pl.swd.app.services.ConfigSaverService
 import pl.swd.app.services.ProjectSaverService
 import java.io.FileNotFoundException
 import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
 
 @Configuration
 open class InitConfiguration {

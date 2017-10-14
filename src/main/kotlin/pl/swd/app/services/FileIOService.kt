@@ -7,7 +7,7 @@ import javafx.stage.FileChooser
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import tornadofx.chooseFile
+import tornadofx.*
 import java.io.File
 import java.io.FileNotFoundException
 

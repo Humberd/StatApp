@@ -11,7 +11,6 @@ import pl.swd.app.services.DataFileParserService
 import pl.swd.app.services.FileIOService
 import pl.swd.app.services.ProjectSaverService
 import pl.swd.app.services.ProjectService
-import pl.swd.app.views.modals.RenameProjectModal
 import tornadofx.*
 import java.io.File
 
