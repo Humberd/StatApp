@@ -16,17 +16,55 @@ class FileIOService {
     companion object : KLogging()
 
     @Autowired lateinit var gson: Gson
+    @Autowired lateinit var appProps: ApplicationPropertiesService
 
-    val openFileExtensions = arrayOf(FileChooser.ExtensionFilter("Text file", "*.txt"))
+    val textFileExtensions = arrayOf(FileChooser.ExtensionFilter("Text Tile", "*.txt"))
+    val projectFileExtensions by lazy { arrayOf(FileChooser.ExtensionFilter("StatApp Project", "*.${appProps.projectFileExtension}")) }
 
     /**
      * Opens a new window with an option of choosing a file
      */
-    fun openFileDialog(title: String = "OpenFile", fileExtensions: Array<FileChooser.ExtensionFilter> = openFileExtensions): Observable<File> {
-        return chooseFile(title = title, filters = fileExtensions) {
-            initialDirectory = File(getCurrentDirectory())
-        }.toObservable()
-                .doOnNext { logger.debug { "Selected file: ${it.name}" } }
+    fun openFileDialogObs(title: String = "Open File",
+                          fileExtensions: Array<FileChooser.ExtensionFilter> = textFileExtensions,
+                          initialDirectory: String = getCurrentDirectory(),
+                          mode: FileChooserMode = FileChooserMode.Single): Observable<File> {
+        return openFileDialog(title, fileExtensions, initialDirectory, mode)
+                .toObservable()
+                .doOnNext { logger.debug { "Selected file: ${it.absolutePath}" } }
+    }
+
+    fun openFileDialog(title: String = "Open File",
+                       fileExtensions: Array<FileChooser.ExtensionFilter> = textFileExtensions,
+                       initialDirectory: String = getCurrentDirectory(),
+                       mode: FileChooserMode = FileChooserMode.Single): List<File> {
+        return chooseFile(title = title, filters = fileExtensions, mode = mode) {
+            /**
+             * Checking if the initialDirectory path is a path or a file.
+             */
+            val potentialDirectory = File(initialDirectory)
+            /* When file or directory doesn't exist it sets a default directory  */
+            if (!potentialDirectory.exists()) {
+                logger.debug { "Initial directory: [$initialDirectory] doesn't exist. Setting a current directory." }
+                this.initialDirectory = File(getCurrentDirectory())
+            }
+            /* When the potentialDirectory is a file it gets a file name and a directory */
+            else if (potentialDirectory.isFile()) {
+                logger.debug { "Initial directory: [$initialDirectory] is a file. Stripping its name and parent directory." }
+                this.initialFileName = potentialDirectory.name
+                this.initialDirectory = potentialDirectory.parentFile.let {
+                    /* When providing single file name it treats it as a file in terms of current directory */
+                    if (it === null) {
+                        return@let File(getCurrentDirectory())
+                    }
+                    it
+                }
+            }
+            /* When the potentialDirectory is a directory it sets it as initialDirectory */
+            else {
+                logger.debug { "Initial directory: [$initialDirectory] is a directory. Setting." }
+                this.initialDirectory = potentialDirectory
+            }
+        }
     }
 
     /**
