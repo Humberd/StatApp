@@ -18,9 +18,19 @@ open class InitConfiguration {
 
     @PostConstruct
     private fun init() {
-        logger.debug { "Initializing Stat App's Config" }
-        this.loadConfig();
+        logger.info { "Initializing Stat App" }
+        this.loadConfig()
         this.loadProject()
+    }
+
+
+    /**
+     * This method is invoked by StartApp itself right before the app life ends
+     */
+    fun destroy() {
+        logger.info { "Shutting down Stat App" }
+
+        configSaverService.saveToFile()
     }
 
     private fun loadConfig() {
@@ -36,9 +46,13 @@ open class InitConfiguration {
     private fun loadProject() {
         try {
             projectSaverService.loadFromFile()
-        } catch (ex: ValueNotInitializedException) {
+        } catch (ex: Exception) {
             logger.debug { ex.message }
-            projectSaverService.loadDefaultProject()
+            when (ex) {
+                is ValueNotInitializedException,
+                is FileNotFoundException -> projectSaverService.loadDefaultProject()
+                else -> throw ex
+            }
         }
     }
 }

@@ -4,11 +4,10 @@ import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import pl.swd.app.exceptions.ConfigDoesNotExistException
-import pl.swd.app.interfaces.Savable
 import pl.swd.app.models.Config
 
 @Service
-class ConfigSaverService : Savable {
+class ConfigSaverService {
     companion object : KLogging()
 
     @Autowired private lateinit var configService: ConfigService
@@ -18,7 +17,7 @@ class ConfigSaverService : Savable {
     /**
      * Saves application configs to a file with a name provided in 'application.properties'
      */
-    override fun saveToFile() {
+    fun saveToFile() {
         logger.debug { "Saving Config to file: [${applicationPropertiesService.configFileName}]" }
         val config = configService.currentConfig.value.apply {
             if (this == null) {
@@ -35,7 +34,7 @@ class ConfigSaverService : Savable {
     /**
      * Loads application configs from a file with a name provided in 'application.properties'
      */
-    override fun loadFromFile() {
+    fun loadFromFile() {
         logger.debug { "Loading Config from file: [${applicationPropertiesService.configFileName}]" }
         val config = fileIOService.getAsObjectFromJsonFile<Config>(applicationPropertiesService.configFileName)
 
