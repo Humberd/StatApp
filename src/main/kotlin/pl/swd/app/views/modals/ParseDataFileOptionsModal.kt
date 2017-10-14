@@ -1,4 +1,4 @@
-package pl.swd.app.views
+package pl.swd.app.views.modals
 
 import javafx.geometry.Insets
 import javafx.scene.control.SelectionMode
@@ -9,9 +9,8 @@ import pl.swd.app.interfaces.GetResultFragment
 import pl.swd.app.utils.asOptional
 import tornadofx.*
 import java.util.*
-import javax.swing.GroupLayout
 
-class ParseFileOptionModalView: Fragment("Rename Column"), GetResultFragment<String> {
+class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<String> {
     companion object : KLogging()
 
     override var cancelFlag: Boolean = false
@@ -28,22 +27,21 @@ class ParseFileOptionModalView: Fragment("Rename Column"), GetResultFragment<Str
                 togglegroup {
                     radiobutton {
                         text = "Auto detect columns name"
+                        isSelected = true
 
                         action {
                             columnListView.items.removeAll()
                             manualView.hide()
-                            currentStage!!.width = 300.0
-                            currentStage!!.height = 150.0
+                            currentStage?.height = 150.0
                         }
-                    }.isSelected = true
+                    }
 
                     radiobutton {
                         text = "Add manual colums name"
 
                         action {
                             manualView.show()
-                            currentStage!!.width = 300.0
-                            currentStage!!.height = 300.0
+                            currentStage?.height = 300.0
                         }
                     }
 
@@ -53,11 +51,11 @@ class ParseFileOptionModalView: Fragment("Rename Column"), GetResultFragment<Str
                 spacing = 10.0
             }.add(manualView)
 
-            padding = Insets(4.0,4.0,4.0,4.0)
+            padding = Insets(4.0, 4.0, 4.0, 4.0)
         }
 
         bottom {
-            hbox {
+            buttonbar {
                 button("Cancel") {
                     shortcut(KeyCodeCombination(KeyCode.ESCAPE))
                     action {
@@ -72,56 +70,56 @@ class ParseFileOptionModalView: Fragment("Rename Column"), GetResultFragment<Str
                         close()
                     }
                 }
-
-                spacing = 10.0
             }
 
-            padding = Insets(4.0,4.0,4.0,4.0)
+            padding = Insets(4.0, 4.0, 4.0, 4.0)
         }
     }
 
     init {
-        manualView.hide()
-        manualView.add(buttonBox)
-        manualView.add(columnListView)
+        manualView.apply {
+            hide()
+            add(buttonBox)
+            add(columnListView)
+            spacing = 2.0
+        }
 
-        manualView.spacing = 2.0
-        buttonBox.spacing = 2.0
-        buttonBox.padding = Insets(4.0,4.0,4.0,4.0)
-        buttonBox.add(button {
-            text = "+"
+        buttonBox.apply {
+            spacing = 2.0
+            padding = Insets(4.0, 4.0, 4.0, 4.0)
+            add(button {
+                text = "+"
 
-            action {
-                val columnNameView = find<GetColumnNameView>().apply { openModal(block = true) }
+                action {
+                    val columnNameView = find<SetColumnNameModal>().apply { openModal(block = true) }
 
-                if (columnNameView.getResult().isPresent && !columnNameView.cancelFlag) {
-                    if (!columnNameView.getResult().get().isBlank()) {
-                        columnListView.items.add(columnNameView.getResult().get())
+                    if (columnNameView.getResult().isPresent && !columnNameView.cancelFlag) {
+                        if (!columnNameView.getResult().get().isBlank()) {
+                            columnListView.items.add(columnNameView.getResult().get())
+                        }
                     }
                 }
-            }
-        })
+            })
+            add(button {
+                text = " - "
 
-        buttonBox.add(button {
-            text = " - "
-
-            action {
-                if (!columnListView.selectedItem.isNullOrEmpty()) {
-                    columnListView.items.removeAt(columnListView.items.indexOf(columnListView.selectedItem))
+                action {
+                    if (!columnListView.selectedItem.isNullOrEmpty()) {
+                        columnListView.items.removeAt(columnListView.items.indexOf(columnListView.selectedItem))
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     override fun onDock() {
-        logger.debug { "Opening a Rename ParseFileOptionModalView Modal" }
-
-        this.modalStage!!.width = 300.0
-        this.modalStage!!.height = 150.0
+        logger.debug { "Opening a Rename ParseDataFileOptionsModal Modal" }
+        super.onDock()
     }
 
     override fun onUndock() {
-        logger.debug { "Closing a Rename ParseFileOptionModalView Modal" }
+        logger.debug { "Closing a Rename ParseDataFileOptionsModal Modal" }
+        super.onUndock()
     }
 
     override fun getResultList(): Optional<List<String>> {

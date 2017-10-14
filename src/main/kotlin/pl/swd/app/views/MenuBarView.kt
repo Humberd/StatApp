@@ -1,7 +1,6 @@
 package pl.swd.app.views;
 
 import com.github.thomasnield.rxkotlinfx.actionEvents
-import io.reactivex.Observable
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
@@ -12,9 +11,9 @@ import pl.swd.app.services.DataFileParserService
 import pl.swd.app.services.FileIOService
 import pl.swd.app.services.ProjectSaverService
 import pl.swd.app.services.ProjectService
+import pl.swd.app.views.modals.ParseDataFileOptionsModal
 import tornadofx.*
 import java.io.File
-import java.util.*
 
 class MenuBarView : View("My View") {
     companion object : KLogging()
@@ -48,7 +47,7 @@ class MenuBarView : View("My View") {
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
                         .flatMap { fileIOService.openFileDialogObs() }
                         .map { file ->
-                            val optionsView  = find<ParseFileOptionModalView>().apply { openModal(block = true) }
+                            val optionsView  = find<ParseDataFileOptionsModal>().apply { openModal(block = true) }
 
                             if (optionsView.cancelFlag) {
                                 return@map

@@ -1,4 +1,4 @@
-package pl.swd.app.views
+package pl.swd.app.views.modals
 
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
@@ -8,14 +8,14 @@ import pl.swd.app.utils.asOptional
 import tornadofx.*
 import java.util.*
 
-class GetColumnNameView: Fragment("Column name"), GetResultFragment<String> {
+class SetColumnNameModal : Modal("Column name"), GetResultFragment<String> {
     companion object : KLogging()
 
     override var cancelFlag: Boolean = false
     private val textField = textfield()
 
     override val root = form {
-        fieldset("Give the column name") {
+        fieldset("Enter the column name") {
             field("Column name").add(textField)
         }
 
@@ -42,11 +42,13 @@ class GetColumnNameView: Fragment("Column name"), GetResultFragment<String> {
     }
 
     override fun onDock() {
-        logger.debug { "Opening a GetColumnNameView" }
+        logger.debug { "Opening a SetColumnNameModal" }
+        super.onDock()
     }
 
     override fun onUndock() {
-        logger.debug { "Closing a GetColumnNameView with column name: '${textField.text}'" }
+        logger.debug { "Closing a SetColumnNameModal with column name: '${textField.text}'" }
+        super.onUndock()
     }
 
     override fun getResult(): Optional<String> {
