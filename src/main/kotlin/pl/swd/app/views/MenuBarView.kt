@@ -7,11 +7,10 @@ import javafx.scene.input.KeyCombination
 import mu.KLogging
 import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.models.SpreadSheet
-import pl.swd.app.services.DataFileParserService
-import pl.swd.app.services.FileIOService
-import pl.swd.app.services.ProjectSaverService
-import pl.swd.app.services.ProjectService
+import pl.swd.app.services.*
+import pl.swd.app.views.modals.ConvertValuesModal
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
+import pl.swd.app.views.modals.RenameProjectModal
 import tornadofx.*
 import java.io.File
 
@@ -22,6 +21,8 @@ class MenuBarView : View("My View") {
     val projectSaverService: ProjectSaverService by di()
     val fileIOService: FileIOService by di()
     val dataFileParserService: DataFileParserService by di()
+    val convertValueService: ConvertValueService by di()
+    val tabsView: TabsView by inject()
 
     override val root = menubar {
         menu("File") {
@@ -45,7 +46,7 @@ class MenuBarView : View("My View") {
             item("Import Data", KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
-                        .flatMap { fileIOService.chooseFileDialog() }
+                        .flatMap { fileIOService.openFileDialogObs() }
                         .map { file ->
                             val optionsView  = find<ParseDataFileOptionsModal>().apply { openModal(block = true) }
 
@@ -63,6 +64,13 @@ class MenuBarView : View("My View") {
             item("Rename") {
                 actionEvents()
                         .subscribe { projectService.renameProject() }
+            }
+        }
+
+        menu("Data") {
+            item("Convert values") {
+                actionEvents()
+                        .subscribe { convertValueService.showConvertDialog(tabsView) }
             }
         }
     }
