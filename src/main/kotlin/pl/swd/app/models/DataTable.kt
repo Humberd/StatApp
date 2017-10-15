@@ -1,8 +1,20 @@
 package pl.swd.app.models;
 
 import javafx.collections.ObservableList
+import pl.swd.app.utils.asOptional
+import java.util.*
 
-data class DataTable(
-        val rows: ObservableList<DataRow>,
-        val columns: ObservableList<DataColumn>
-)
+class DataTable(
+        var rows: ObservableList<DataRow>,
+        var columns: ObservableList<DataColumn>
+) {
+    fun getColumnIndexByName(name: String): Optional<Int> {
+        for(i in columns.indices) {
+            if (columns[i].name == name) {
+                return i.asOptional()
+            }
+        }
+
+        return Optional.empty()
+    }
+}
