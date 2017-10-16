@@ -10,7 +10,6 @@ import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.utils.asOptional
 import tornadofx.*
 import java.util.*
-import javax.xml.crypto.Data
 
 class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<String> {
     companion object : KLogging()
@@ -127,7 +126,11 @@ class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<Stri
         super.onUndock()
     }
 
+    /**
+     * Gets column names list
+     */
     override fun getResultList(): Optional<List<String>> {
+        super.getResultList()
         return columnListView.items.asOptional()
     }
 

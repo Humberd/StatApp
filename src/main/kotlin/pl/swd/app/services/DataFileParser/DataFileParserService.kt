@@ -7,12 +7,14 @@ import pl.swd.app.models.DataRow
 import pl.swd.app.models.DataTable
 import pl.swd.app.models.DataValue
 import tornadofx.*
-import java.io.File
 
 @Service
 class DataFileParserService {
-    fun generateDataTable(pair: Pair<File, List<String>>, option: DataFileOption): DataTable {
-        return parseFile(pair, option)
+    /**
+     * Takes a list of rows, list of columnNames and generates datatable out of it
+     */
+    fun generateDataTable(rows: List<String>, columnNames: List<String>, options: DataFileOption): DataTable {
+        return parseFile(rows, columnNames, options)
     }
 
     fun generateMockDataTable(): DataTable {
@@ -31,15 +33,12 @@ class DataFileParserService {
                 columns = arrayListOf(idColumn, nameColumn).observable())
     }
 
-    private fun parseFile(pair: Pair<File, List<String>>, option: DataFileOption): DataTable {
-        val inputStream = pair.first.inputStream()
-        var lineList = mutableListOf<String>()
+    private fun parseFile(initialRows: List<String>, columnNames: List<String>, option: DataFileOption): DataTable {
+        var lineList = initialRows
         val separatorRegex = Regex("[\\s;]")
-        var colums = mutableListOf<DataColumn>()
-        var rows = mutableListOf<DataRow>()
+        var colums: MutableList<DataColumn>
+        val rows = mutableListOf<DataRow>()
 
-        //Read lines file
-        inputStream.bufferedReader().useLines { lines -> lines.forEach { lineList.add(it) } }
         //Remove coomented lines
         lineList = lineList.filter { (!it.startsWith("#") && !it.isEmpty()) }.toMutableList()
 
@@ -50,15 +49,15 @@ class DataFileParserService {
             lineList.removeAt(0)
         } else {
             val values = lineList.first().split(separatorRegex)
-            colums = pair.second.map { DataColumn(it, ArrayList()) }.toMutableList()
+            colums = columnNames.map { DataColumn(it, ArrayList()) }.toMutableList()
 
             if (colums.isEmpty()) {
                 for (i in values.indices) {
                     colums.add(DataColumn("Column " + i.toString(), ArrayList()))
                 }
             } else if (colums.size > values.size) {
-                colums = colums.subList(0,values.size)
-            } else if (colums.size < values.size){
+                colums = colums.subList(0, values.size)
+            } else if (colums.size < values.size) {
                 for (i in values.indices.minus(colums.indices)) {
                     colums.add(DataColumn("Column " + i.toString(), ArrayList()))
                 }
@@ -69,7 +68,7 @@ class DataFileParserService {
         lineList.forEach {
             //Split row
             val values = it.split(separatorRegex)
-            var rowMap = HashMap<String, DataValue>()
+            val rowMap = HashMap<String, DataValue>()
 
             if (values.size != colums.size) {
                 throw FileParserException("The row contains the wrong number of data")
