@@ -36,7 +36,7 @@ class ConvertValueService {
 
         val spreadSheet = projectService.currentProject.value.get().spreadSheetList[tabIndex]
         val datatable = spreadSheet.dataTable
-        val newColumnName = columnName + "_Converted"
+        val newColumnName = columnName + "_discrete"
         val columnIndex = datatable.getColumnIndexByName(columnName)
         val filteredColumnValues = datatable.columns[columnIndex.get()].columnValuesList.distinct()
         var newColumnValues: ArrayList<DataValue> = ArrayList()

@@ -6,9 +6,11 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
 import pl.swd.app.interfaces.GetResultFragment
+import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.utils.asOptional
 import tornadofx.*
 import java.util.*
+import javax.xml.crypto.Data
 
 class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<String> {
     companion object : KLogging()
@@ -20,6 +22,7 @@ class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<Stri
     private val columnListView = listview<String> {
         selectionModel.selectionMode = SelectionMode.SINGLE
     }
+    private var option = DataFileOption.AUTO_DETECT_COLUMS
 
     override val root = borderpane {
         center {
@@ -33,6 +36,7 @@ class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<Stri
                             columnListView.items.removeAll()
                             manualView.hide()
                             currentStage?.height = 150.0
+                            option = DataFileOption.AUTO_DETECT_COLUMS
                         }
                     }
 
@@ -42,6 +46,7 @@ class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<Stri
                         action {
                             manualView.show()
                             currentStage?.height = 300.0
+                            option = DataFileOption.USER_COLUMS
                         }
                     }
 
@@ -124,5 +129,9 @@ class ParseDataFileOptionsModal : Modal("Rename Column"), GetResultFragment<Stri
 
     override fun getResultList(): Optional<List<String>> {
         return columnListView.items.asOptional()
+    }
+
+    fun getOption(): DataFileOption {
+        return option
     }
 }
