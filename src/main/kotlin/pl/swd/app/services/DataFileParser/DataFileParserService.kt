@@ -7,12 +7,15 @@ import pl.swd.app.models.DataRow
 import pl.swd.app.models.DataTable
 import pl.swd.app.models.DataValue
 import tornadofx.*
-import java.io.File
 
 @Service
 class DataFileParserService {
-    fun generateDataTable(pair: Pair<File, List<String>>, option: DataFileOption): DataTable {
-        return parseFile(pair, option)
+    val separatorRegex = Regex("[\\s;]")
+    /**
+     * Takes a list of rows, list of columnNames and generates datatable out of it
+     */
+    fun generateDataTable(rows: List<String>, columnNames: List<String>, options: DataFileOption): DataTable {
+        return parseRawDataToDataTable(rows, columnNames, options)
     }
 
     fun generateMockDataTable(): DataTable {
@@ -31,15 +34,11 @@ class DataFileParserService {
                 columns = arrayListOf(idColumn, nameColumn).observable())
     }
 
-    private fun parseFile(pair: Pair<File, List<String>>, option: DataFileOption): DataTable {
-        val inputStream = pair.first.inputStream()
-        var lineList = mutableListOf<String>()
-        val separatorRegex = Regex("[\\s;]")
-        var colums = mutableListOf<DataColumn>()
-        var rows = mutableListOf<DataRow>()
+    fun parseRawDataToDataTable(initialRows: List<String>, columnNames: List<String>, option: DataFileOption): DataTable {
+        var lineList = initialRows
+        var colums: MutableList<DataColumn>
+        val rows = mutableListOf<DataRow>()
 
-        //Read lines file
-        inputStream.bufferedReader().useLines { lines -> lines.forEach { lineList.add(it) } }
         //Remove coomented lines
         lineList = lineList.filter { (!it.startsWith("#") && !it.isEmpty()) }.toMutableList()
 
@@ -50,26 +49,27 @@ class DataFileParserService {
             lineList.removeAt(0)
         } else {
             val values = lineList.first().split(separatorRegex)
-            colums = pair.second.map { DataColumn(it, ArrayList()) }.toMutableList()
+            colums = columnNames.map { DataColumn(it, ArrayList()) }.toMutableList()
 
             if (colums.isEmpty()) {
                 for (i in values.indices) {
-                    colums.add(DataColumn("Column " + i.toString(), ArrayList()))
+                    colums.add(DataColumn("Column" + i.toString(), ArrayList()))
                 }
             } else if (colums.size > values.size) {
-                colums = colums.subList(0,values.size)
-            } else if (colums.size < values.size){
+                colums = colums.subList(0, values.size)
+            } else if (colums.size < values.size) {
                 for (i in values.indices.minus(colums.indices)) {
-                    colums.add(DataColumn("Column " + i.toString(), ArrayList()))
+                    colums.add(DataColumn("Column" + i.toString(), ArrayList()))
                 }
             }
+            lineList.removeAt(0)
         }
 
         //parse row data
         lineList.forEach {
             //Split row
             val values = it.split(separatorRegex)
-            var rowMap = HashMap<String, DataValue>()
+            val rowMap = HashMap<String, DataValue>()
 
             if (values.size != colums.size) {
                 throw FileParserException("The row contains the wrong number of data")
@@ -86,6 +86,20 @@ class DataFileParserService {
         }
 
         return DataTable(rows = rows.observable(), columns = colums.observable())
+    }
+
+    fun parseDataTableToRawData(dataTable: DataTable): List<String> {
+        val result = mutableListOf<String>()
+        val separator = ";"
+
+        val columnNamesList = dataTable.columns.map { it.name }
+        /* Adding a column names header */
+        result.add(columnNamesList.joinToString(separator))
+
+        /* Adding rows */
+        dataTable.rows.forEach { result.add(it.rawInitialString) }
+
+        return result
     }
 }
 

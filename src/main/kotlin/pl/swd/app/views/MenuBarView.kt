@@ -7,9 +7,12 @@ import javafx.scene.input.KeyCombination
 import mu.KLogging
 import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.models.SpreadSheet
-import pl.swd.app.services.*
+import pl.swd.app.services.ConvertValueService
 import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.services.DataFileParser.DataFileParserService
+import pl.swd.app.services.FileIOService
+import pl.swd.app.services.ProjectSaverService
+import pl.swd.app.services.ProjectService
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
 import tornadofx.*
 import java.io.File
@@ -49,13 +52,13 @@ class MenuBarView : View("My View") {
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
                         .flatMap { fileIOService.openFileDialogObs() }
                         .map { file ->
-                            val optionsView  = find<ParseDataFileOptionsModal>().apply { openModal(block = true) }
+                            val optionsView = find<ParseDataFileOptionsModal>().apply { openModal(block = true) }
 
                             if (optionsView.cancelFlag) {
                                 return@map
                             }
 
-                            registerSpreadSheet(Pair(file,optionsView.getResultList().get()), optionsView.getOption())
+                            registerSpreadSheet(file, optionsView.getResultList().get(), optionsView.getOption())
                         }
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
             }
@@ -86,8 +89,8 @@ class MenuBarView : View("My View") {
      *
      * @return spreadSheet name
      */
-    fun registerSpreadSheet(pair: Pair<File, List<String>>, option: DataFileOption): String {
-        val spreadSheetName = pair.first.name
+    fun registerSpreadSheet(file: File, columnNames: List<String>, options: DataFileOption): String {
+        val spreadSheetName = file.name
 
         projectService.currentProject.value.apply {
             /*Can only register a spreadsheet when currentProject exists*/
@@ -95,7 +98,11 @@ class MenuBarView : View("My View") {
                 throw ProjectDoesNotExistException("Cannot register spreadsheet, because Project does not exist")
             }
 
-            val dataTable = dataFileParserService.generateDataTable(pair, option)
+            val dataTable = dataFileParserService.generateDataTable(
+                    rows = file.readLines(),
+                    columnNames = columnNames,
+                    options = options)
+
             val spreadSheet = SpreadSheet(
                     name = spreadSheetName,
                     dataTable = dataTable
