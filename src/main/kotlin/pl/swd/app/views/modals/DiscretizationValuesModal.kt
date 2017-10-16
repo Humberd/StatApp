@@ -2,17 +2,13 @@ package pl.swd.app.views.modals
 
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.Parent
+import javafx.scene.input.InputMethodRequests
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
-import pl.swd.app.models.DataColumn
-import pl.swd.app.models.DataValue
-import pl.swd.app.models.Project
-import pl.swd.app.models.SpreadSheet
 import tornadofx.*
 
-class ConvertValuesModal : Modal("Convert table data") {
+class DiscretizationValuesModal : Modal("Discretization table data") {
     companion object : KLogging()
 
     val columnNameList: ArrayList<String> by param()
@@ -20,6 +16,10 @@ class ConvertValuesModal : Modal("Convert table data") {
     val columnChooserBox = hbox()
     val comboboxLabel = label()
     val comboBox = combobox<String>()
+
+    val chooseSectionBox = hbox()
+    val sectionLabel = label()
+    val sectionField = textfield()
 
     override val root = borderpane {
         center {
@@ -57,21 +57,38 @@ class ConvertValuesModal : Modal("Convert table data") {
         columnChooserBox.alignment = Pos.BASELINE_CENTER
         columnChooserBox.padding = Insets(4.0, 4.0, 4.0, 4.0)
 
+        sectionLabel.text = "Choose number of section "
+        sectionField.alignment = Pos.BASELINE_CENTER
+
+        chooseSectionBox.add(sectionLabel)
+        chooseSectionBox.add(sectionField)
+        chooseSectionBox.alignment = Pos.BASELINE_CENTER
+        chooseSectionBox.padding = Insets(4.0, 4.0, 4.0, 4.0)
+
         root.center.apply {
             add(columnChooserBox)
+            add(chooseSectionBox)
         }
+
     }
 
     private fun save() {
-        if (comboBox.selectionModel.selectedItem.isNullOrEmpty()) {
-            close()
-        } else {
-            status = ModalStatus.COMPLETED
-            close()
-        }
+        val item = comboBox.selectionModel.selectedItem
+        val sectionValue = sectionField.text.toIntOrNull()
+
+        if (item.isNullOrEmpty())  return
+        if (sectionValue == null) return
+        if (sectionValue < 2) return
+
+        status = ModalStatus.COMPLETED
+        close()
     }
 
-    fun getSelectedValue(): String {
+    fun getSelectedColumnName(): String {
         return comboBox.selectionModel.selectedItem
+    }
+
+    fun getSectionNumber(): Int {
+        return sectionField.text.toInt()
     }
 }
