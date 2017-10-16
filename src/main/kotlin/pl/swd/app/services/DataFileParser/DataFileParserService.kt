@@ -1,4 +1,4 @@
-package pl.swd.app.services;
+package pl.swd.app.services.DataFileParser;
 
 import org.springframework.stereotype.Service
 import pl.swd.app.exceptions.FileParserException
@@ -8,12 +8,11 @@ import pl.swd.app.models.DataTable
 import pl.swd.app.models.DataValue
 import tornadofx.*
 import java.io.File
-import io.reactivex.Observable
 
 @Service
 class DataFileParserService {
-    fun generateDataTable(pair: Pair<File, List<String>>): DataTable {
-        return parseFile(pair)
+    fun generateDataTable(pair: Pair<File, List<String>>, option: DataFileOption): DataTable {
+        return parseFile(pair, option)
     }
 
     fun generateMockDataTable(): DataTable {
@@ -32,7 +31,7 @@ class DataFileParserService {
                 columns = arrayListOf(idColumn, nameColumn).observable())
     }
 
-    private fun parseFile(pair: Pair<File, List<String>>): DataTable {
+    private fun parseFile(pair: Pair<File, List<String>>, option: DataFileOption): DataTable {
         val inputStream = pair.first.inputStream()
         var lineList = mutableListOf<String>()
         val separatorRegex = Regex("[\\s;]")
@@ -45,7 +44,7 @@ class DataFileParserService {
         lineList = lineList.filter { (!it.startsWith("#") && !it.isEmpty()) }.toMutableList()
 
 
-        if (pair.second.isEmpty()) {
+        if (option.isAutoDetect()) {
             //Split columns name
             colums = lineList.first().split(separatorRegex).map { DataColumn(it, ArrayList()) }.toMutableList()
             lineList.removeAt(0)
@@ -53,11 +52,15 @@ class DataFileParserService {
             val values = lineList.first().split(separatorRegex)
             colums = pair.second.map { DataColumn(it, ArrayList()) }.toMutableList()
 
-            if (colums.size > values.size) {
+            if (colums.isEmpty()) {
+                for (i in values.indices) {
+                    colums.add(DataColumn("Column " + i.toString(), ArrayList()))
+                }
+            } else if (colums.size > values.size) {
                 colums = colums.subList(0,values.size)
             } else if (colums.size < values.size){
-                for (i in values.indices.minus(colums.size)) {
-                    colums.add(DataColumn(i.toString(), ArrayList()))
+                for (i in values.indices.minus(colums.indices)) {
+                    colums.add(DataColumn("Column " + i.toString(), ArrayList()))
                 }
             }
         }

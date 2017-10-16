@@ -8,9 +8,9 @@ import mu.KLogging
 import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.models.SpreadSheet
 import pl.swd.app.services.*
-import pl.swd.app.views.modals.ConvertValuesModal
+import pl.swd.app.services.DataFileParser.DataFileOption
+import pl.swd.app.services.DataFileParser.DataFileParserService
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
-import pl.swd.app.views.modals.RenameProjectModal
 import tornadofx.*
 import java.io.File
 
@@ -54,7 +54,7 @@ class MenuBarView : View("My View") {
                                 return@map
                             }
 
-                            registerSpreadSheet(Pair(file,optionsView.getResultList().get()))
+                            registerSpreadSheet(Pair(file,optionsView.getResultList().get()), optionsView.getOption())
                         }
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
             }
@@ -80,7 +80,7 @@ class MenuBarView : View("My View") {
      *
      * @return spreadSheet name
      */
-    fun registerSpreadSheet(pair: Pair<File, List<String>>): String {
+    fun registerSpreadSheet(pair: Pair<File, List<String>>, option: DataFileOption): String {
         val spreadSheetName = pair.first.name
 
         projectService.currentProject.value.apply {
@@ -89,7 +89,7 @@ class MenuBarView : View("My View") {
                 throw ProjectDoesNotExistException("Cannot register spreadsheet, because Project does not exist")
             }
 
-            val dataTable = dataFileParserService.generateDataTable(pair)
+            val dataTable = dataFileParserService.generateDataTable(pair, option)
             val spreadSheet = SpreadSheet(
                     name = spreadSheetName,
                     dataTable = dataTable
