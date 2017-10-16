@@ -1,9 +1,7 @@
 package pl.swd.app.services
 
-import com.sun.tools.javac.comp.Todo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.w3c.dom.ranges.Range
 import pl.swd.app.models.DataColumn
 import pl.swd.app.models.DataValue
 import pl.swd.app.views.TabsView
