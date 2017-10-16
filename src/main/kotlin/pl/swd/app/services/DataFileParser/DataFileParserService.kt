@@ -10,11 +10,12 @@ import tornadofx.*
 
 @Service
 class DataFileParserService {
+    val separatorRegex = Regex("[\\s;]")
     /**
      * Takes a list of rows, list of columnNames and generates datatable out of it
      */
     fun generateDataTable(rows: List<String>, columnNames: List<String>, options: DataFileOption): DataTable {
-        return parseFile(rows, columnNames, options)
+        return parseRawDataToDataTable(rows, columnNames, options)
     }
 
     fun generateMockDataTable(): DataTable {
@@ -33,9 +34,8 @@ class DataFileParserService {
                 columns = arrayListOf(idColumn, nameColumn).observable())
     }
 
-    private fun parseFile(initialRows: List<String>, columnNames: List<String>, option: DataFileOption): DataTable {
+    fun parseRawDataToDataTable(initialRows: List<String>, columnNames: List<String>, option: DataFileOption): DataTable {
         var lineList = initialRows
-        val separatorRegex = Regex("[\\s;]")
         var colums: MutableList<DataColumn>
         val rows = mutableListOf<DataRow>()
 
@@ -53,15 +53,16 @@ class DataFileParserService {
 
             if (colums.isEmpty()) {
                 for (i in values.indices) {
-                    colums.add(DataColumn("Column " + i.toString(), ArrayList()))
+                    colums.add(DataColumn("Column" + i.toString(), ArrayList()))
                 }
             } else if (colums.size > values.size) {
                 colums = colums.subList(0, values.size)
             } else if (colums.size < values.size) {
                 for (i in values.indices.minus(colums.indices)) {
-                    colums.add(DataColumn("Column " + i.toString(), ArrayList()))
+                    colums.add(DataColumn("Column" + i.toString(), ArrayList()))
                 }
             }
+            lineList.removeAt(0)
         }
 
         //parse row data
@@ -85,6 +86,20 @@ class DataFileParserService {
         }
 
         return DataTable(rows = rows.observable(), columns = colums.observable())
+    }
+
+    fun parseDataTableToRawData(dataTable: DataTable): List<String> {
+        val result = mutableListOf<String>()
+        val separator = ";"
+
+        val columnNamesList = dataTable.columns.map { it.name }
+        /* Adding a column names header */
+        result.add(columnNamesList.joinToString(separator))
+
+        /* Adding rows */
+        dataTable.rows.forEach { result.add(it.rawInitialString) }
+
+        return result
     }
 }
 
