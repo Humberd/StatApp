@@ -24,6 +24,7 @@ class MenuBarView : View("My View") {
     val convertValueService: ConvertValueService by di()
     val discretizationService: DiscretizationService by di()
     val normalizationService: NormalizationService by di()
+    val changeSectionService: ChangeSectionService by di()
     val tabsView: TabsView by inject()
 
     override val root = menubar {
@@ -83,6 +84,11 @@ class MenuBarView : View("My View") {
             item("Normalization") {
                 actionEvents()
                         .subscribe { normalizationService.showDialog(tabsView) }
+            }
+
+            item("Change interval") {
+                actionEvents()
+                        .subscribe { changeSectionService.showDialog(tabsView) }
             }
         }
     }
