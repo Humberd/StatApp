@@ -1,18 +1,16 @@
 #Rozk³ad przychodów i aktywów netto w trzech hrabstwach
 
 Aktywa Przych Hrabstwo
-2,8;3,2;ROGERS
+2,8	3,2	ROGERS
 3,4	6,4	DODGE
 2,2	3,3	ROGERS
 3,2	3,0	ROGERS
 3,0	3,2	ROGERS
-#Rozk³ad przychodów i aktywów netto w trzech hrabstwach
 2,7	2,7	ROGERS
 2,5	3,9	ROGERS
 3,0	2,3	HIGHLAND
 3,2	1,9	HIGHLAND
 2,8	3,3	ROGERS
-#Rozk³ad przychodów i aktywów netto w trzech hrabstwach
 3,4	2,4	HIGHLAND
 3,8	1,1	HIGHLAND
 3,3	3,1	ROGERS
@@ -30,7 +28,6 @@ Aktywa Przych Hrabstwo
 3,0	3,3	ROGERS
 3,8	1,4	HIGHLAND
 3,2	6,5	DODGE
-#Rozk³ad przychodów i aktywów netto w trzech hrabstwach
 3,3	2,1	HIGHLAND
 2,6	3,8	ROGERS
 2,8	1,1	HIGHLAND
@@ -48,7 +45,6 @@ Aktywa Przych Hrabstwo
 3,0	6,7	DODGE
 4,0	6,6	DODGE
 3,8	5,9	DODGE
-#Rozk³ad przychodów i aktywów netto w trzech hrabstwach
 3,1	3,4	ROGERS
 2,8	3,0	HIGHLAND
 3,0	6,4	DODGE

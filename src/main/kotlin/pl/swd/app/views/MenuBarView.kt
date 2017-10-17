@@ -23,6 +23,7 @@ class MenuBarView : View("My View") {
     val dataFileParserService: DataFileParserService by di()
     val convertValueService: ConvertValueService by di()
     val discretizationService: DiscretizationService by di()
+    val normalizationService: NormalizationService by di()
     val tabsView: TabsView by inject()
 
     override val root = menubar {
@@ -76,7 +77,12 @@ class MenuBarView : View("My View") {
 
             item("Discretization") {
                 actionEvents()
-                        .subscribe{ discretizationService.showDialog(tabsView) }
+                        .subscribe { discretizationService.showDialog(tabsView) }
+            }
+
+            item("Normalization") {
+                actionEvents()
+                        .subscribe { normalizationService.showDialog(tabsView) }
             }
         }
     }
