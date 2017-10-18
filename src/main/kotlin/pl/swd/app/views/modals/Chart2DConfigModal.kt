@@ -42,41 +42,46 @@ class Chart2DConfigModal : Modal("2D Chart") {
 
         separator()
 
-        fieldset("Choose Columns to assign to axises") {
+        fieldset {
             enableWhen(selectedSpreadSheet.isNotNull)
-            fieldset {
-                field("X Axis") {
-                    combobox<DataColumn>(property = model.xAxisColumn) {
-                        selectedSpreadSheet
-                                .toObservable()
-                                .map { it.dataTable.columns }
-                                .doOnNext { logger.debug { "Bound ${it.size} SpreadSheet columns to X Axis" } }
-                                .subscribe { items = it }
+            fieldset("Choose Columns to assign to axises") {
+                fieldset {
+                    field("X Axis") {
+                        combobox<DataColumn>(property = model.xAxisColumn) {
+                            selectedSpreadSheet
+                                    .toObservable()
+                                    .map { it.dataTable.columns }
+                                    .doOnNext { logger.debug { "Bound ${it.size} SpreadSheet columns to X Axis" } }
+                                    .subscribe { items = it }
 
-                        cellFormat { dataColumn: DataColumn ->
-                            this@cellFormat.text = dataColumn.name
+                            cellFormat { dataColumn: DataColumn ->
+                                this@cellFormat.text = dataColumn.name
+                            }
+
+                            required()
                         }
-
-                        required()
                     }
                 }
 
-                field("Y Axis") {
-                    combobox<DataColumn>(property = model.yAxisColumn) {
-                        selectedSpreadSheet
-                                .toObservable()
-                                .map { it.dataTable.columns }
-                                .doOnNext { logger.debug { "Bound ${it.size} SpreadSheet columns to Y Axis" } }
-                                .subscribe { items = it }
+                fieldset {
+                    field("Y Axis") {
+                        combobox<DataColumn>(property = model.yAxisColumn) {
+                            selectedSpreadSheet
+                                    .toObservable()
+                                    .map { it.dataTable.columns }
+                                    .doOnNext { logger.debug { "Bound ${it.size} SpreadSheet columns to Y Axis" } }
+                                    .subscribe { items = it }
 
-                        cellFormat { dataColumn: DataColumn ->
-                            this@cellFormat.text = dataColumn.name
+                            cellFormat { dataColumn: DataColumn ->
+                                this@cellFormat.text = dataColumn.name
+                            }
+
+                            required()
                         }
-
-                        required()
                     }
                 }
             }
+
 
 //            fieldset("Classes") {
 //
@@ -90,6 +95,7 @@ class Chart2DConfigModal : Modal("2D Chart") {
             button("Create") {
                 shortcut(KeyCodeCombination(KeyCode.ENTER))
                 enableWhen(model.valid)
+                action { find(Chart2DModal::class).openWindow() }
             }
         }
 
@@ -114,7 +120,7 @@ class Chart2DConfigModal : Modal("2D Chart") {
 
     class Chart2DConfigViewModel : ViewModel() {
         val xAxisColumn = bind { SimpleObjectProperty<DataColumn>() }
-        val yAxisColumn =  bind { SimpleObjectProperty<DataColumn>() }
+        val yAxisColumn = bind { SimpleObjectProperty<DataColumn>() }
     }
 }
 

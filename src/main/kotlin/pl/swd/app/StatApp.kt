@@ -1,11 +1,14 @@
 package pl.swd.app
 
 import javafx.application.Application
+import javafx.scene.chart.NumberAxis
 import javafx.stage.Stage
 import mu.KLogging
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import pl.swd.app.configs.InitConfiguration
+import pl.swd.app.models.Chart2dData
 import pl.swd.app.views.MainView
+import pl.swd.app.views.modals.Chart2DModal
 import tornadofx.*
 import kotlin.reflect.KClass
 
@@ -39,6 +42,17 @@ class StatApp : App(MainView::class) {
 
             centerOnScreen()
         }
+
+        find(Chart2DModal::class, params = mapOf(
+                Chart2DModal::chart2dData to Chart2dData(
+                        chartType = "Linear",
+                        xAxis = NumberAxis(),
+                        xAxisData = arrayListOf(1, 2, 3),
+                        yAxis = NumberAxis(),
+                        yAxisData = arrayListOf(4, 2, 3)
+
+                )
+        )).openWindow()
     }
 
     override fun stop() {
