@@ -13,7 +13,7 @@ class RenameSpreadSheetModal : Modal("SpreadSheet") {
     val model = SpreadSheetViewModel(spreadSheet)
 
     override val root = form {
-        fieldset("Choose a new file for the SpreadSheet") {
+        fieldset("Choose a new name for the SpreadSheet") {
             field("Name") {
                 textfield(model.name).requestFocus()
             }
