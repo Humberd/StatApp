@@ -34,8 +34,8 @@ class StatApp : App(MainView::class) {
         super.start(stage)
 
         with(stage) {
-            width = 700.0
-            height = 600.0
+            width = 850.0
+            height = 700.0
 
             centerOnScreen()
         }
