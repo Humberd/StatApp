@@ -10,6 +10,7 @@ import pl.swd.app.models.SpreadSheet
 import pl.swd.app.services.*
 import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.services.DataFileParser.DataFileParserService
+import pl.swd.app.views.modals.Chart2DConfigModal
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
 import tornadofx.*
 import java.io.File
@@ -52,7 +53,7 @@ class MenuBarView : View("My View") {
                         .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
                         .flatMap { fileIOService.openFileDialogObs() }
                         .map { file ->
-                            val optionsView = find<ParseDataFileOptionsModal>().apply { openModal(block = true) }
+                            val optionsView = find(ParseDataFileOptionsModal::class).apply { openModal(block = true) }
 
                             if (optionsView.cancelFlag) {
                                 return@map
@@ -95,6 +96,17 @@ class MenuBarView : View("My View") {
             item("Select procent") {
                 actionEvents()
                         .subscribe { selectProcentDataService.showDialog(tabsView) }
+            }
+        }
+
+        menu("Charts") {
+            item("2D Chart") {
+                actionEvents()
+                        .subscribe { find(Chart2DConfigModal::class).openWindow() }
+            }
+
+            item("3D Chart") {
+
             }
         }
     }
