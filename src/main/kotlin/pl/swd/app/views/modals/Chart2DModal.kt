@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox
 import mu.KLogging
 import pl.swd.app.models.Chart2dData
 import tornadofx.*
+import java.util.*
 
 class Chart2DModal : Modal() {
     companion object : KLogging()
@@ -37,8 +38,8 @@ class Chart2DModal : Modal() {
     }
 
     init {
-        /* X - Numbers, Y - Numbers */
         val chart =
+                /* X - Numbers, Y - Numbers */
                 if (chart2dData.xAxis.numberValues !== null && chart2dData.yAxis.numberValues !== null) {
                     ScatterChart(
                             NumberAxis().apply { this.label = chart2dData.xAxis.title },
@@ -47,7 +48,7 @@ class Chart2DModal : Modal() {
                                 val newSeries = series(chart2dData.title)
 
                                 zipValues(chart2dData.xAxis.numberValues!!, chart2dData.yAxis.numberValues!!)
-                                        .subscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
                             }
                 }
                 /* X - Numbers, Y - Strings */
@@ -59,7 +60,7 @@ class Chart2DModal : Modal() {
                                 val newSeries = series(chart2dData.title)
 
                                 zipValues(chart2dData.xAxis.numberValues!!, chart2dData.yAxis.stringValues!!)
-                                        .subscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
                             }
                 }
                 /* X - Strings, Y - Numbers */
@@ -71,7 +72,7 @@ class Chart2DModal : Modal() {
                                 val newSeries = series(chart2dData.title)
 
                                 zipValues(chart2dData.xAxis.stringValues!!, chart2dData.yAxis.numberValues!!)
-                                        .subscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
                             }
                 }
                 /* X- Strings, Y - String */
@@ -83,7 +84,7 @@ class Chart2DModal : Modal() {
                                 val newSeries = series(chart2dData.title)
 
                                 zipValues(chart2dData.xAxis.stringValues!!, chart2dData.yAxis.stringValues!!)
-                                        .subscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
                             }
                 } else {
                     throw Exception("Axises must have at leas one stringValues or numberValues, but now 1 or more has none")
@@ -92,6 +93,14 @@ class Chart2DModal : Modal() {
         chart.title = chart2dData.title
         box.add(chart)
 
+    }
+
+    private fun getLowerBound(list: List<Double>): Double {
+        return Collections.min(list)
+    }
+
+    private fun getUpperBound(list: List<Double>): Double {
+        return Collections.max(list)
     }
 
     private fun <A, B> zipValues(firstList: List<A>, secondList: List<B>): Observable<Pair<A, B>> {

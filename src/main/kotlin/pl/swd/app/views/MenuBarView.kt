@@ -84,7 +84,7 @@ class MenuBarView : View("My View") {
         menu("Charts") {
             item("2D Chart") {
                 actionEvents()
-                        .subscribe { find(Chart2DConfigModal::class).openModal() }
+                        .subscribe { find(Chart2DConfigModal::class).openWindow() }
             }
 
             item("3D Chart") {
