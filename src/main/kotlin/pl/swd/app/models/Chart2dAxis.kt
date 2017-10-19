@@ -1,5 +1,7 @@
 package pl.swd.app.models 
 
 data class Chart2dAxis(
-        val axisType: Chart2dAxisType
+        val title: String,
+        var numberValues: List<Number>? = null,
+        var stringValues: List<String>? = null
 )

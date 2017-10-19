@@ -1,11 +1,11 @@
 package pl.swd.app
 
 import javafx.application.Application
-import javafx.scene.chart.NumberAxis
 import javafx.stage.Stage
 import mu.KLogging
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import pl.swd.app.configs.InitConfiguration
+import pl.swd.app.models.Chart2dAxis
 import pl.swd.app.models.Chart2dData
 import pl.swd.app.views.MainView
 import pl.swd.app.views.modals.Chart2DModal
@@ -45,11 +45,15 @@ class StatApp : App(MainView::class) {
 
         find(Chart2DModal::class, params = mapOf(
                 Chart2DModal::chart2dData to Chart2dData(
-                        chartType = "Linear",
-                        xAxis = NumberAxis(),
-                        xAxisData = arrayListOf(1, 2, 3),
-                        yAxis = NumberAxis(),
-                        yAxisData = arrayListOf(4, 2, 3)
+                        title = "My chart title",
+                        xAxis = Chart2dAxis(
+                                title = "Age",
+                                numberValues = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
+                        ),
+                        yAxis = Chart2dAxis(
+                                title = "Height",
+                                numberValues = listOf(1, 2, 3, 4, 5, 4, 3, 2, 1)
+                        )
 
                 )
         )).openWindow()
