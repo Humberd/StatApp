@@ -8,6 +8,7 @@ import mu.KLogging
 import pl.swd.app.exceptions.ProjectDoesNotExistException
 import pl.swd.app.models.SpreadSheet
 import pl.swd.app.services.*
+import pl.swd.app.services.ClassifyData.ClassifyDataService
 import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.services.DataFileParser.DataFileParserService
 import pl.swd.app.views.modals.Chart2DConfigModal
@@ -27,6 +28,7 @@ class MenuBarView : View("My View") {
     val normalizationService: NormalizationService by di()
     val changeSectionService: ChangeSectionService by di()
     val selectProcentDataService: SelectProcentDataService by di()
+    val classifyDataService: ClassifyDataService by di()
     val tabsView: TabsView by inject()
 
     override val root = menubar {
@@ -96,6 +98,11 @@ class MenuBarView : View("My View") {
             item("Select procent") {
                 actionEvents()
                         .subscribe { selectProcentDataService.showDialog(tabsView) }
+            }
+
+            item("Classify data") {
+                actionEvents()
+                        .subscribe { classifyDataService.showDialog(tabsView) }
             }
         }
 
