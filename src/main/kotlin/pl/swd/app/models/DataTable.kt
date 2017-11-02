@@ -17,4 +17,12 @@ class DataTable(
 
         return Optional.empty()
     }
+
+    fun addRow(row: DataRow) {
+        rows.add(row)
+
+        columns.forEach {
+            it.columnValuesList.add(row.rowValuesMap.getValue(it.name))
+        }
+    }
 }
