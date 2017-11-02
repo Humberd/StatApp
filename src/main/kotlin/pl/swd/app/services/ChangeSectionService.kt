@@ -77,5 +77,5 @@ class ChangeSectionService {
         return columnNameList
     }
 
-    
+
 }
