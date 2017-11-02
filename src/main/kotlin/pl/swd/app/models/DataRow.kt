@@ -14,7 +14,7 @@ data class DataRow(
         var equal = false
 
         this.rowValuesMap.forEach { (name, value) ->
-            if (row.rowValuesMap.get(name) == value) {
+            if (row.rowValuesMap.getValue(name).value.toString() == value.value.toString()) {
                 equal = true
             } else {
                 return false
