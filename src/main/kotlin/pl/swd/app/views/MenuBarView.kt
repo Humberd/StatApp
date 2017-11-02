@@ -104,6 +104,11 @@ class MenuBarView : View("My View") {
                 actionEvents()
                         .subscribe { classifyDataService.showDialog(tabsView) }
             }
+
+            item("Classify Quantiti") {
+                actionEvents()
+                        .subscribe { classifyDataService.showQualityDialog(tabsView) }
+            }
         }
 
         menu("Charts") {

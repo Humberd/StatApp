@@ -9,4 +9,18 @@ data class DataRow(
         rowValuesMapp.put(columnName, data)
         rowValuesMap = rowValuesMapp
     }
+
+    fun compareRow(row: DataRow): Boolean {
+        var equal = false
+
+        this.rowValuesMap.forEach { (name, value) ->
+            if (row.rowValuesMap.get(name) == value) {
+                equal = true
+            } else {
+                return false
+            }
+        }
+
+        return equal
+    }
 }

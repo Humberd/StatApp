@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service
 import pl.swd.app.models.ClassifySelectedDataModel
 import pl.swd.app.models.DataRow
 import pl.swd.app.models.DataValue
+import pl.swd.app.models.Project
 import pl.swd.app.services.ConvertValueService
+import pl.swd.app.services.ProjectSaverService
 import pl.swd.app.services.ProjectService
 import pl.swd.app.views.TabsView
+import pl.swd.app.views.modals.ClassifiQualityCheckModal
 import pl.swd.app.views.modals.ClassifyDataModal
 import pl.swd.app.views.modals.ConvertValuesModal
 import tornadofx.find
@@ -41,6 +44,56 @@ class ClassifyDataService {
                 clasifiData(view.getClassifySelectedData(), selectedTabIndex)
             }
         }
+    }
+
+    fun showQualityDialog(tabsView: TabsView) {
+        val selectedTabIndex = tabsView.root.selectionModel.selectedIndex
+
+        if (selectedTabIndex != -1 && projectService.currentProject.value.isPresent) {
+            val columnList = generateColumnList(selectedTabIndex)
+
+            if (columnList.isEmpty()) return
+
+            val view = find<ClassifiQualityCheckModal>(params = mapOf(ConvertValuesModal::columnNameList to columnList)).apply {
+                openModal(block = true)
+            }
+
+            if (view.status.isCompleted()) {
+               val quality = crossValidate(selectedTabIndex, view.getClassifySelectedData())
+                ProjectSaverService.logger.debug { "${quality}" }
+            }
+        }
+    }
+
+    fun crossValidate(tabIndex: Int, conf: ClassifySelectedDataModel): Double {
+        val project = projectService.currentProject.value?.let { it } ?: return 0.0
+        val rows = project.get().spreadSheetList[tabIndex].dataTable.rows.toList()
+        val numOfRows = rows.count()
+        val decisionClass = conf.decisionClassCol
+        var valid = 0.0
+
+        rows.forEach {
+            val row = it
+            val copyRows = rows.toMutableList()
+            //Needs indexed rows :(
+            var indexToRemove = 0
+
+            copyRows.forEachIndexed { i, d ->
+                if (d.compareRow(row)) {
+                    indexToRemove = i
+                }
+            }
+            ProjectSaverService.logger.debug { "${indexToRemove}" }
+            copyRows.removeAt(indexToRemove) //.filter { it != row }
+
+            val tmpConf = ClassifySelectedDataModel(conf.decisionCols, conf.decisionClassCol, row, conf.kNum, conf.metric)
+
+            val className = classify(tabIndex, tmpConf, copyRows.toList())
+
+            if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) valid += 1
+        }
+
+        return valid/numOfRows
     }
 
     private fun generateColumnList(tabIndex: Int): ArrayList<String> {
@@ -92,15 +145,14 @@ class ClassifyDataService {
             }
         }
 
-        val newValue = classify(tabIndex, userSelectedParameters)
+        val newValue = classify(tabIndex, userSelectedParameters, rows)
 
         userSelectedParameters.newDataRow.addValue(userSelectedParameters.decisionClassCol, DataValue(newValue))
         spreadSheet.dataTable.addRow(userSelectedParameters.newDataRow)
     }
 
-    private fun classify(tabIndex: Int, conf: ClassifySelectedDataModel): String {
-        val project = projectService.currentProject.value?.let { it } ?: return ""
-        val rows = project.get().spreadSheetList[tabIndex].dataTable.rows.toList()
+    private fun classify(tabIndex: Int, conf: ClassifySelectedDataModel, list: List<DataRow>): String {
+        val rows = list
         var distancesMap: HashMap<DataRow, Double> = hashMapOf()
 
         if (conf.metric == ClassifiDistanceMetric.MAHALANOBIS) {
@@ -141,13 +193,6 @@ class ClassifyDataService {
         val finalClass = sortedFrequencies.last().first
 
         return finalClass
-
-//        return Observable.create<DataRow> { s ->
-//            conf.newDataRow.set(finalClass ?: "unknown", conf.decisionClassCol.name)
-//            val newRow = DataRow.createNew(conf.newDataRow)
-//            s.onNext(newRow)
-//            s.onCompleted()
-//        }
     }
 
     private fun inverseCovarianceMatrix(data: List<DataRow>, columns: List<String>): RealMatrix? {
