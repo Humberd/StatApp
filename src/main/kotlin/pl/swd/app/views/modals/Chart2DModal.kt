@@ -4,11 +4,11 @@ import io.reactivex.Observable
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.ScatterChart
+import javafx.scene.chart.XYChart
 import javafx.scene.layout.VBox
 import mu.KLogging
 import pl.swd.app.models.Chart2dData
 import tornadofx.*
-import java.util.*
 
 class Chart2DModal : Modal() {
     companion object : KLogging()
@@ -17,21 +17,6 @@ class Chart2DModal : Modal() {
     var box: VBox by singleAssign()
 
     override val root = borderpane {
-        //        scatterchart("Foo", CategoryAxis(), NumberAxis()) {
-//            series("Product X") {
-//                data("MAR", 10245, 1000) {
-//
-//                }
-//                data("APR", 23963, 5000)
-//                data("MAY", 15038, 40000)
-//            }
-//            series("Product Y") {
-//                data("MAR", 28443)
-//                data("APR", 22845)
-//                data("MAY", 19045)
-//                data("MAY", 15045)
-//            }
-//        }
         center {
             box = vbox()
         }
@@ -45,10 +30,35 @@ class Chart2DModal : Modal() {
                             NumberAxis().apply { this.label = chart2dData.xAxis.title },
                             NumberAxis().apply { this.label = chart2dData.yAxis.title })
                             .apply {
-                                val newSeries = series(chart2dData.title)
+                                val seriesMap: HashMap<String, XYChart.Series<Number, Number>> = HashMap()
 
+                                chart2dData.series.forEach {
+                                    if (!seriesMap.containsKey(it)) {
+                                        seriesMap.put(it, XYChart.Series())
+                                    }
+                                }
+
+                                var index = 0
                                 zipValues(chart2dData.xAxis.numberValues!!, chart2dData.yAxis.numberValues!!)
-                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair ->
+                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                        }
+
+                                seriesMap
+                                        .toSortedMap()
+                                        .forEach { key, value ->
+                                            value.name = key
+                                            data.add(value)
+                                        }
+                                xAxis.autoRangingProperty()
+//
+//                                (xAxis as NumberAxis).apply {
+//                                    setAutoRanging(true)
+//                                    lowerBound = 4.0
+//                                    upperBound = 15.0
+//                                    tickUnit = 2.0
+//                                }
+
                             }
                 }
                 /* X - Numbers, Y - Strings */
@@ -57,10 +67,26 @@ class Chart2DModal : Modal() {
                             NumberAxis().apply { this.label = chart2dData.xAxis.title },
                             CategoryAxis().apply { this.label = chart2dData.yAxis.title })
                             .apply {
-                                val newSeries = series(chart2dData.title)
+                                val seriesMap: HashMap<String, XYChart.Series<Number, String>> = HashMap()
 
+                                chart2dData.series.forEach {
+                                    if (!seriesMap.containsKey(it)) {
+                                        seriesMap.put(it, XYChart.Series())
+                                    }
+                                }
+
+                                var index = 0
                                 zipValues(chart2dData.xAxis.numberValues!!, chart2dData.yAxis.stringValues!!)
-                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair ->
+                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                        }
+
+                                seriesMap
+                                        .toSortedMap()
+                                        .forEach { key, value ->
+                                            value.name = key
+                                            data.add(value)
+                                        }
                             }
                 }
                 /* X - Strings, Y - Numbers */
@@ -69,10 +95,26 @@ class Chart2DModal : Modal() {
                             CategoryAxis().apply { this.label = chart2dData.xAxis.title },
                             NumberAxis().apply { this.label = chart2dData.yAxis.title })
                             .apply {
-                                val newSeries = series(chart2dData.title)
+                                val seriesMap: HashMap<String, XYChart.Series<String, Number>> = HashMap()
 
+                                chart2dData.series.forEach {
+                                    if (!seriesMap.containsKey(it)) {
+                                        seriesMap.put(it, XYChart.Series())
+                                    }
+                                }
+
+                                var index = 0
                                 zipValues(chart2dData.xAxis.stringValues!!, chart2dData.yAxis.numberValues!!)
-                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair ->
+                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                        }
+
+                                seriesMap
+                                        .toSortedMap()
+                                        .forEach { key, value ->
+                                            value.name = key
+                                            data.add(value)
+                                        }
                             }
                 }
                 /* X- Strings, Y - String */
@@ -81,10 +123,26 @@ class Chart2DModal : Modal() {
                             CategoryAxis().apply { this.label = chart2dData.xAxis.title },
                             CategoryAxis().apply { this.label = chart2dData.yAxis.title })
                             .apply {
-                                val newSeries = series(chart2dData.title)
+                                val seriesMap: HashMap<String, XYChart.Series<String, String>> = HashMap()
 
+                                chart2dData.series.forEach {
+                                    if (!seriesMap.containsKey(it)) {
+                                        seriesMap.put(it, XYChart.Series())
+                                    }
+                                }
+
+                                var index = 0
                                 zipValues(chart2dData.xAxis.stringValues!!, chart2dData.yAxis.stringValues!!)
-                                        .blockingSubscribe { pair -> newSeries.data(pair.first, pair.second) }
+                                        .blockingSubscribe { pair ->
+                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                        }
+
+                                seriesMap
+                                        .toSortedMap()
+                                        .forEach { key, value ->
+                                            value.name = key
+                                            data.add(value)
+                                        }
                             }
                 } else {
                     throw Exception("Axises must have at leas one stringValues or numberValues, but now 1 or more has none")
@@ -93,14 +151,6 @@ class Chart2DModal : Modal() {
         chart.title = chart2dData.title
         box.add(chart)
 
-    }
-
-    private fun getLowerBound(list: List<Double>): Double {
-        return Collections.min(list)
-    }
-
-    private fun getUpperBound(list: List<Double>): Double {
-        return Collections.max(list)
     }
 
     private fun <A, B> zipValues(firstList: List<A>, secondList: List<B>): Observable<Pair<A, B>> {

@@ -102,7 +102,29 @@ class Chart2DConfigModal : Modal("2D Chart") {
                     }
                 }
             }
+        }
 
+        separator()
+
+        fieldset {
+            enableWhen(selectedSpreadSheet.isNotNull)
+            fieldset("Choose data class") {
+                field("Data class") {
+                    combobox<DataColumn>(property = model.dataClass) {
+                        selectedSpreadSheet
+                                .toObservable()
+                                .map { it.dataTable.columns }
+                                .doOnNext { logger.debug { "Bound ${it.size} SpreadSheet columns to data class" } }
+                                .subscribe { items = it }
+
+                        cellFormat { dataColumn: DataColumn ->
+                            this@cellFormat.text = dataColumn.name
+                        }
+
+                        required()
+                    }
+                }
+            }
         }
 
         buttonbar {
@@ -147,17 +169,18 @@ class Chart2DConfigModal : Modal("2D Chart") {
                 ),
                 yAxis = Chart2dAxis(
                         title = model.yAxisColumn.getValue().name
-                )
+                ),
+                series = parseDataValuesListToStringList(model.dataClass.value.columnValuesList)
         )
 
-        when (model.xAxisType.value) {
+        when (model.xAxisType.value!!) {
             Chart2dAxisType.NUMERIC -> chartData.xAxis.numberValues =
                     parseDataValuesListToNumbersList(model.xAxisColumn.value.columnValuesList)
             Chart2dAxisType.STRING -> chartData.xAxis.stringValues =
                     parseDataValuesListToStringList(model.xAxisColumn.value.columnValuesList)
         }
 
-        when (model.yAxisType.value) {
+        when (model.yAxisType.value!!) {
             Chart2dAxisType.NUMERIC -> chartData.yAxis.numberValues =
                     parseDataValuesListToNumbersList(model.yAxisColumn.value.columnValuesList)
             Chart2dAxisType.STRING -> chartData.yAxis.stringValues =
@@ -191,6 +214,7 @@ class Chart2DConfigModal : Modal("2D Chart") {
         val xAxisType = bind { SimpleObjectProperty<Chart2dAxisType>() }
         val yAxisColumn = bind { SimpleObjectProperty<DataColumn>() }
         val yAxisType = bind { SimpleObjectProperty<Chart2dAxisType>() }
+        val dataClass = bind { SimpleObjectProperty<DataColumn>() }
     }
 }
 

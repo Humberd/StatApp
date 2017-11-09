@@ -48,12 +48,13 @@ class StatApp : App(MainView::class) {
 //                        title = "My chart title",
 //                        xAxis = Chart2dAxis(
 //                                title = "Age",
-//                                numberValues = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
+//                                numberValues = listOf(4, 5, 4, 4, 5, 6, 7, 8, 9)
 //                        ),
 //                        yAxis = Chart2dAxis(
 //                                title = "Height",
 //                                numberValues = listOf(1, 2, 3, 4, 5, 4, 3, 2, 1)
-//                        )
+//                        ),
+//                        series = listOf("blue", "red", "green", "blue", "red", "green", "blue", "red", "green")
 //
 //                )
 //        )).openWindow()
