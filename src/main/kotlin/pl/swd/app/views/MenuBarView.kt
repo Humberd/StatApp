@@ -29,6 +29,7 @@ class MenuBarView : View("My View") {
     val changeSectionService: ChangeSectionService by di()
     val selectProcentDataService: SelectProcentDataService by di()
     val classifyDataService: ClassifyDataService by di()
+    val kClusteringService: kClusteringService by di()
     val tabsView: TabsView by inject()
 
     override val root = menubar {
@@ -108,6 +109,11 @@ class MenuBarView : View("My View") {
             item("Classify Quantiti") {
                 actionEvents()
                         .subscribe { classifyDataService.showQualityDialog(tabsView) }
+            }
+
+            item("k clustering") {
+                actionEvents()
+                        .subscribe { kClusteringService.showDialog(tabsView) }
             }
         }
 

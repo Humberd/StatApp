@@ -195,7 +195,7 @@ class ClassifyDataService {
         return finalClass
     }
 
-    private fun inverseCovarianceMatrix(data: List<DataRow>, columns: List<String>): RealMatrix? {
+    fun inverseCovarianceMatrix(data: List<DataRow>, columns: List<String>): RealMatrix? {
         var matrixArray = emptyArray<DoubleArray>()
 
         data.forEach {
@@ -220,7 +220,7 @@ class ClassifyDataService {
         return null
     }
 
-    private fun calculateDistance(metric: ClassifiDistanceMetric, newRow: DataRow, existingRow: DataRow, columns: List<String>, invCov: RealMatrix?): Double {
+    fun calculateDistance(metric: ClassifiDistanceMetric, newRow: DataRow, existingRow: DataRow, columns: List<String>, invCov: RealMatrix?): Double {
         var distance = 0.0
 
         if (metric == ClassifiDistanceMetric.EUKLIDES) {
