@@ -46,11 +46,6 @@ class kClusteringService {
         var newColumnValues: ArrayList<DataValue> = ArrayList()
 
         val a = clusterData(rows, userSelectedParameters)
-        val columns2 = project.get().spreadSheetList[tabIndex].dataTable.columns.toList()
-//        val newValue = classify(tabIndex, userSelectedParameters, rows)
-//
-//        userSelectedParameters.newDataRow.addValue(userSelectedParameters.decisionClassCol, DataValue(newValue))
-//        spreadSheet.dataTable.addRow(userSelectedParameters.newDataRow)
 
         spreadSheet.dataTable.rows.forEachIndexed { i, r ->
 
