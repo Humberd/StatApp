@@ -96,10 +96,24 @@ class DataFileParserService {
         /* Adding a column names header */
         result.add(columnNamesList.joinToString(separator))
 
-        /* Adding rows */
-        dataTable.rows.forEach { result.add(it.rawInitialString) }
+        if (dataTable.columns.size == 0) {
+            return result
+        }
+
+        val numberOfRows = dataTable.columns[0].columnValuesList.size
+
+        for (i in 0..(numberOfRows - 1)) {
+            result.add(getRowAsStringFromColumns(dataTable, i).joinToString(separator))
+        }
 
         return result
+    }
+
+    private fun getRowAsStringFromColumns(dataTable: DataTable, rowIndex: Int): List<String> {
+        return dataTable.columns
+                .map { dataColumn ->
+                    dataColumn.columnValuesList[rowIndex].value.toString()
+                }
     }
 }
 
