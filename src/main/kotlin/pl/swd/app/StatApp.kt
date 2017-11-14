@@ -43,21 +43,22 @@ class StatApp : App(MainView::class) {
             centerOnScreen()
         }
 
-//        find(Chart2DModal::class, params = mapOf(
-//                Chart2DModal::chart2dData to Chart2dData(
-//                        title = "My chart title",
-//                        xAxis = Chart2dAxis(
-//                                title = "Age",
-//                                numberValues = listOf(4, 5, 4, 4, 5, 6, 7, 8, 9)
-//                        ),
-//                        yAxis = Chart2dAxis(
-//                                title = "Height",
-//                                numberValues = listOf(1, 2, 3, 4, 5, 4, 3, 2, 1)
-//                        ),
+        find(Chart2DModal::class, params = mapOf(
+                Chart2DModal::chart2dData to Chart2dData(
+                        title = "My chart title",
+                        xAxis = Chart2dAxis(
+                                title = "Age",
+                                numberValues = listOf(4, 5, 4, 4, 5, 6, 7, 8, 9)
+                        ),
+                        yAxis = Chart2dAxis(
+                                title = "Height",
+                                numberValues = listOf(1, 2, 3, 4, 5, 4, 3, 2, 1)
+                        ),
+                        series = listOf()
 //                        series = listOf("blue", "red", "green", "blue", "red", "green", "blue", "red", "green")
-//
-//                )
-//        )).openWindow()
+
+                )
+        )).openWindow()
     }
 
     override fun stop() {
