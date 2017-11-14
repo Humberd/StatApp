@@ -1,18 +1,17 @@
 package pl.swd.app.services.ClassifyData
 
+import javafx.scene.chart.ScatterChart
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import org.apache.commons.math3.stat.correlation.Covariance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import pl.swd.app.models.ClassifySelectedDataModel
-import pl.swd.app.models.DataRow
-import pl.swd.app.models.DataValue
-import pl.swd.app.models.Project
+import pl.swd.app.models.*
 import pl.swd.app.services.ConvertValueService
 import pl.swd.app.services.ProjectSaverService
 import pl.swd.app.services.ProjectService
 import pl.swd.app.views.TabsView
+import pl.swd.app.views.modals.Chart2DModal
 import pl.swd.app.views.modals.ClassifiQualityCheckModal
 import pl.swd.app.views.modals.ClassifyDataModal
 import pl.swd.app.views.modals.ConvertValuesModal
@@ -72,28 +71,81 @@ class ClassifyDataService {
         val decisionClass = conf.decisionClassCol
         var valid = 0.0
 
-        rows.forEach {
-            val row = it
-            val copyRows = rows.toMutableList()
-            //Needs indexed rows :(
-            var indexToRemove = 0
+        val validateList = ArrayList<Double>()
 
-            copyRows.forEachIndexed { i, d ->
-                if (d.compareRow(row)) {
-                    indexToRemove = i
+        for (i in 1 until numOfRows) {
+            var validd = 0.0
+
+            ProjectSaverService.logger.debug { "iteration: ${i} / ${numOfRows}" }
+
+            rows.forEach {
+                val row = it
+                val copyRows = rows.toMutableList()
+                //Needs indexed rows :(
+                var indexToRemove = 0
+
+                copyRows.forEachIndexed { i, d ->
+                    if (d.compareRow(row)) {
+                        indexToRemove = i
+                    }
                 }
+
+                copyRows.removeAt(indexToRemove) //.filter { it != row }
+
+                val tmpConf = ClassifySelectedDataModel(conf.decisionCols, conf.decisionClassCol, row, i, conf.metric)
+
+                val className = classify(tabIndex, tmpConf, copyRows.toList())
+
+                if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) validd += 1
             }
-            ProjectSaverService.logger.debug { "${indexToRemove}" }
-            copyRows.removeAt(indexToRemove) //.filter { it != row }
 
-            val tmpConf = ClassifySelectedDataModel(conf.decisionCols, conf.decisionClassCol, row, conf.kNum, conf.metric)
-
-            val className = classify(tabIndex, tmpConf, copyRows.toList())
-
-            if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) valid += 1
+            validateList.add(validd/numOfRows)
         }
 
+        generateChart(validateList, conf.metric, project.get().spreadSheetList[tabIndex].name)
+
+//        rows.forEach {
+//            val row = it
+//            val copyRows = rows.toMutableList()
+//            //Needs indexed rows :(
+//            var indexToRemove = 0
+//
+//            copyRows.forEachIndexed { i, d ->
+//                if (d.compareRow(row)) {
+//                    indexToRemove = i
+//                }
+//            }
+//            ProjectSaverService.logger.debug { "${indexToRemove}" }
+//            copyRows.removeAt(indexToRemove) //.filter { it != row }
+//
+//            val tmpConf = ClassifySelectedDataModel(conf.decisionCols, conf.decisionClassCol, row, conf.kNum, conf.metric)
+//
+//            val className = classify(tabIndex, tmpConf, copyRows.toList())
+//
+//            if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) valid += 1
+//        }
+
         return valid/numOfRows
+    }
+
+    private fun generateChart(values: List<Double>, metric: ClassifiDistanceMetric, name: String) {
+        val a = values.mapIndexed { index, d -> index }
+
+        find(Chart2DModal::class, params = mapOf(
+                Chart2DModal::chart2dData to Chart2dData(
+                        title = "${name} - ${metric.name}",
+                        xAxis = Chart2dAxis(
+                                title = "k",
+                                numberValues = values.mapIndexed { index, d -> index }
+                        ),
+                        yAxis = Chart2dAxis(
+                                title = "%",
+                                numberValues = values
+                        ),
+                        series = listOf()
+
+                )
+        )).openWindow()
     }
 
     private fun generateColumnList(tabIndex: Int): ArrayList<String> {
@@ -180,6 +232,10 @@ class ClassifyDataService {
         }
 
         for (i in 0..k) {
+            if (sortedDistances.size <= k) {
+                break
+            }
+
             val pair = sortedDistances[i]
             val classifier = pair.first.rowValuesMap.getValue(conf.decisionClassCol).value.toString()  //.value(conf.decisionClassCol.name).toString()
 
@@ -189,6 +245,9 @@ class ClassifyDataService {
         }
 
         val sortedFrequencies = frequencies.toList().sortedBy { it.second }
+
+
+        if (sortedFrequencies.isEmpty()) return ""
 
         val finalClass = sortedFrequencies.last().first
 
