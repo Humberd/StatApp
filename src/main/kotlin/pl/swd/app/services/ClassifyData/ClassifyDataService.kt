@@ -1,6 +1,8 @@
 package pl.swd.app.services.ClassifyData
 
-import javafx.scene.chart.ScatterChart
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import org.apache.commons.math3.stat.correlation.Covariance
@@ -15,11 +17,9 @@ import pl.swd.app.views.modals.Chart2DModal
 import pl.swd.app.views.modals.ClassifiQualityCheckModal
 import pl.swd.app.views.modals.ClassifyDataModal
 import pl.swd.app.views.modals.ConvertValuesModal
-import tornadofx.find
+import tornadofx.*
 import java.lang.Exception
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.HashMap
+import java.util.*
 
 @Service
 class ClassifyDataService {
@@ -58,7 +58,7 @@ class ClassifyDataService {
             }
 
             if (view.status.isCompleted()) {
-               val quality = crossValidate(selectedTabIndex, view.getClassifySelectedData())
+                val quality = crossValidate(selectedTabIndex, view.getClassifySelectedData())
                 ProjectSaverService.logger.debug { "${quality}" }
             }
         }
@@ -73,36 +73,44 @@ class ClassifyDataService {
 
         val validateList = ArrayList<Double>()
 
-        for (i in 1 until numOfRows) {
-            var validd = 0.0
+        Observable.range(1, numOfRows)
+                .flatMap { i ->
+                    Observable.just(i)
+                            .observeOn(Schedulers.computation())
+                            .doOnNext {
+                                var validd = 0.0
 
-            ProjectSaverService.logger.debug { "iteration: ${i} / ${numOfRows}" }
+                                ProjectSaverService.logger.debug { "iteration: ${i} / ${numOfRows}" }
 
-            rows.forEach {
-                val row = it
-                val copyRows = rows.toMutableList()
-                //Needs indexed rows :(
-                var indexToRemove = 0
+                                rows.forEach { row ->
+                                    val copyRows = rows.toMutableList()
+                                    //Needs indexed rows :(
+                                    var indexToRemove = 0
 
-                copyRows.forEachIndexed { i, d ->
-                    if (d.compareRow(row)) {
-                        indexToRemove = i
-                    }
+                                    copyRows.forEachIndexed { i, d ->
+                                        if (d.compareRow(row)) {
+                                            indexToRemove = i
+                                        }
+                                    }
+
+                                    copyRows.removeAt(indexToRemove) //.filter { it != row }
+
+                                    val tmpConf = ClassifySelectedDataModel(conf.decisionCols, conf.decisionClassCol, row, i, conf.metric)
+
+                                    val className = classify(tabIndex, tmpConf, copyRows.toList())
+
+                                    if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) validd += 1
+                                }
+
+                                validateList.add(validd / numOfRows)
+                            }
                 }
-
-                copyRows.removeAt(indexToRemove) //.filter { it != row }
-
-                val tmpConf = ClassifySelectedDataModel(conf.decisionCols, conf.decisionClassCol, row, i, conf.metric)
-
-                val className = classify(tabIndex, tmpConf, copyRows.toList())
-
-                if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) validd += 1
-            }
-
-            validateList.add(validd/numOfRows)
-        }
-
-        generateChart(validateList, conf.metric, project.get().spreadSheetList[tabIndex].name)
+                .toList()
+                // every ui update needs to be on the fx thread
+                .observeOnFx()
+                .subscribe { success ->
+                    generateChart(validateList, conf.metric, project.get().spreadSheetList[tabIndex].name)
+                }
 
 //        rows.forEach {
 //            val row = it
@@ -125,7 +133,7 @@ class ClassifyDataService {
 //            if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) valid += 1
 //        }
 
-        return valid/numOfRows
+        return valid / numOfRows
     }
 
     private fun generateChart(values: List<Double>, metric: ClassifiDistanceMetric, name: String) {
@@ -155,7 +163,7 @@ class ClassifyDataService {
         val project = projectService.currentProject.value?.let { it } ?: return columnNameList
         val rowValuesMap = project.get().spreadSheetList[tabIndex].dataTable.rows.first().rowValuesMap
 
-        for(entry in rowValuesMap) {
+        for (entry in rowValuesMap) {
             val columnValue = entry.value.value as String
 
             if (columnValue.toDoubleOrNull() != null) {
@@ -170,7 +178,7 @@ class ClassifyDataService {
         val project = projectService.currentProject.value?.let { it } ?: return
         val rowValuesMap = project.get().spreadSheetList[tabIndex].dataTable.rows.first().rowValuesMap
 
-        for(entry in rowValuesMap) {
+        for (entry in rowValuesMap) {
             if (rowValuesMap.containsKey("${entry.key}_convert")) continue
 
             val columnValue = entry.value.value as String
@@ -189,7 +197,7 @@ class ClassifyDataService {
             val convertColumns = userSelectedParameters.newDataRow.rowValuesMap.keys.filter { it.contains("_convert") }
 
             convertColumns.forEach { col ->
-                val existRow = rows.find { it.rowValuesMap.getValue(col).value.toString() ==  userSelectedParameters.newDataRow.rowValuesMap.getValue(col).value.toString() }.let { it } ?: return
+                val existRow = rows.find { it.rowValuesMap.getValue(col).value.toString() == userSelectedParameters.newDataRow.rowValuesMap.getValue(col).value.toString() }.let { it } ?: return
                 val nonConvertColumnName = col.replace("_convert", "")
                 val nonConvertValue = existRow.rowValuesMap.getValue(nonConvertColumnName)
 
@@ -228,7 +236,7 @@ class ClassifyDataService {
 
         var k = conf.kNum
         if (k % 2 == 0) {
-            k += + 1
+            k += +1
         }
 
         for (i in 0..k) {
@@ -272,7 +280,7 @@ class ClassifyDataService {
         try {
             val invCov = MatrixUtils.inverse(cov)
             return invCov
-        }catch (e: Exception) {
+        } catch (e: Exception) {
 
         }
 
@@ -330,7 +338,7 @@ class ClassifyDataService {
 
             val multiplyResult = mxT.multiply(invCov).multiply(mx)
 
-            val multiplyValue = multiplyResult.getEntry(0,0)
+            val multiplyValue = multiplyResult.getEntry(0, 0)
 
             distance = Math.sqrt(multiplyValue)
         }
