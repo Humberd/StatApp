@@ -41,7 +41,11 @@ class Chart2DModal : Modal() {
                                 var index = 0
                                 zipValues(chart2dData.xAxis.numberValues!!, chart2dData.yAxis.numberValues!!)
                                         .blockingSubscribe { pair ->
-                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            if (index < chart2dData.series.size) {
+                                                seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            } else {
+                                                seriesMap.putIfAbsent(chart2dData.title, XYChart.Series())?.data(pair.first, pair.second)
+                                            }
                                         }
 
                                 seriesMap
@@ -78,7 +82,11 @@ class Chart2DModal : Modal() {
                                 var index = 0
                                 zipValues(chart2dData.xAxis.numberValues!!, chart2dData.yAxis.stringValues!!)
                                         .blockingSubscribe { pair ->
-                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            if (index < chart2dData.series.size) {
+                                                seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            } else {
+                                                seriesMap.putIfAbsent(chart2dData.title, XYChart.Series())?.data(pair.first, pair.second)
+                                            }
                                         }
 
                                 seriesMap
@@ -106,7 +114,11 @@ class Chart2DModal : Modal() {
                                 var index = 0
                                 zipValues(chart2dData.xAxis.stringValues!!, chart2dData.yAxis.numberValues!!)
                                         .blockingSubscribe { pair ->
-                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            if (index < chart2dData.series.size) {
+                                                seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            } else {
+                                                seriesMap.putIfAbsent(chart2dData.title, XYChart.Series())?.data(pair.first, pair.second)
+                                            }
                                         }
 
                                 seriesMap
@@ -134,7 +146,11 @@ class Chart2DModal : Modal() {
                                 var index = 0
                                 zipValues(chart2dData.xAxis.stringValues!!, chart2dData.yAxis.stringValues!!)
                                         .blockingSubscribe { pair ->
-                                            seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            if (index < chart2dData.series.size) {
+                                                seriesMap.get(chart2dData.series[index++])?.data(pair.first, pair.second)
+                                            } else {
+                                                seriesMap.putIfAbsent(chart2dData.title, XYChart.Series())?.data(pair.first, pair.second)
+                                            }
                                         }
 
                                 seriesMap
@@ -145,7 +161,7 @@ class Chart2DModal : Modal() {
                                         }
                             }
                 } else {
-                    throw Exception("Axises must have at leas one stringValues or numberValues, but now 1 or more has none")
+                    throw Exception("Axises must have at least one stringValues or numberValues, but now 1 or more has none")
                 }
 
         chart.title = chart2dData.title
