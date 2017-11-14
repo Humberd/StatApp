@@ -71,7 +71,7 @@ class ClassifyDataService {
         val decisionClass = conf.decisionClassCol
         var valid = 0.0
 
-        val validateList = ArrayList<Double>()
+        val validateList = ArrayList<Double>(numOfRows)
 
         Observable.range(1, numOfRows)
                 .flatMap { i ->
