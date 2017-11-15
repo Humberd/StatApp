@@ -20,10 +20,10 @@ import pl.swd.app.views.modals.ConvertValuesModal
 import tornadofx.*
 import java.lang.Exception
 import java.util.*
+import kotlin.collections.HashMap
 
 @Service
 class ClassifyDataService {
-
     @Autowired private lateinit var projectService: ProjectService
     @Autowired private lateinit var convertValueService: ConvertValueService
 
@@ -71,7 +71,8 @@ class ClassifyDataService {
         val decisionClass = conf.decisionClassCol
         var valid = 0.0
 
-        val validateList = ArrayList<Double>(numOfRows)
+        val validateMap = HashMap<Int, Double>(numOfRows)
+//        val validateList = ArrayList<Double>(numOfRows)
 
         Observable.range(1, numOfRows)
                 .flatMap { i ->
@@ -102,14 +103,18 @@ class ClassifyDataService {
                                     if (className == row.rowValuesMap.getValue(decisionClass).value.toString()) validd += 1
                                 }
 
-                                validateList.add(validd / numOfRows)
+                                validateMap.put(i, validd/numOfRows)
+//                                validateList.add(validd / numOfRows)
                             }
                 }
                 .toList()
                 // every ui update needs to be on the fx thread
                 .observeOnFx()
                 .subscribe { success ->
-                    generateChart(validateList, conf.metric, project.get().spreadSheetList[tabIndex].name)
+                    val fooList = validateMap.toSortedMap()
+                            .map { entry -> entry.value }
+
+                    generateChart(fooList, conf.metric, project.get().spreadSheetList[tabIndex].name)
                 }
 
 //        rows.forEach {
