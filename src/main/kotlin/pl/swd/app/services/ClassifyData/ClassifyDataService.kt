@@ -27,6 +27,9 @@ class ClassifyDataService {
     @Autowired private lateinit var projectService: ProjectService
     @Autowired private lateinit var convertValueService: ConvertValueService
 
+    @Volatile
+    var distancesMapp = hashMapOf<String, Double>()
+
     fun showDialog(tabsView: TabsView) {
         val selectedTabIndex = tabsView.root.selectionModel.selectedIndex
 
@@ -80,6 +83,7 @@ class ClassifyDataService {
                             .observeOn(Schedulers.computation())
                             .doOnNext {
                                 var validd = 0.0
+                                distancesMapp = hashMapOf<String, Double>()
 
                                 ProjectSaverService.logger.debug { "iteration: ${i} / ${numOfRows}" }
 
@@ -230,9 +234,20 @@ class ClassifyDataService {
             }
         } else {
             rows.forEachIndexed { i, d ->
-                val dist = calculateDistance(conf.metric, conf.newDataRow, d, conf.decisionCols, null)
-                distancesMap.set(d, dist)
+                var dist = distancesMapp.get(conf.newDataRow.ida.toString() + "-" + d.ida.toString())
+
+
+                if (dist == null) {
+                    dist = calculateDistance(conf.metric, conf.newDataRow, d, conf.decisionCols, null)
+                    distancesMapp.put(conf.newDataRow.ida.toString() + "-" + d.ida.toString(), dist!!)
+                } else {
+
+                }
+
+                distancesMap.put(d, dist!!)
             }
+
+
         }
 
         val sortedDistances = distancesMap.toList().sortedBy { it.second }

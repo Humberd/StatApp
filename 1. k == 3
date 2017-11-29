@@ -1,0 +1,12 @@
+1. k == 3
+2. miara odleglosci 
+3. losujemy/wybieramy srodki k skupien 
+
+losowac etykiety dla kasss i przesowac srodki w kierunku skupienia
+
+koniec kiedy srodki sie nie mzieniaja albo przesowaja sie nieznaczne 
+jezeli nie ma zmian w etykietowaniu obiektow to koniec algorytmu 
+
+srodki najlepiej pierwsze wziac z obiektow z danych 
+kolumna z etykietami skupien 
+ktore skupienie odpowiada ktorej klasie
