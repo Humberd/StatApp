@@ -11,6 +11,7 @@ import pl.swd.app.services.*
 import pl.swd.app.services.ClassifyData.ClassifyDataService
 import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.services.DataFileParser.DataFileParserService
+import pl.swd.app.services.DecisionTree.TreeService
 import pl.swd.app.views.modals.Chart2DConfigModal
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
 import tornadofx.*
@@ -30,6 +31,7 @@ class MenuBarView : View("My View") {
     val selectProcentDataService: SelectProcentDataService by di()
     val classifyDataService: ClassifyDataService by di()
     val kClusteringService: kClusteringService by di()
+    val treeService: TreeService by di()
     val tabsView: TabsView by inject()
 
     override val root = menubar {
@@ -114,6 +116,11 @@ class MenuBarView : View("My View") {
             item("k clustering") {
                 actionEvents()
                         .subscribe { kClusteringService.showDialog(tabsView) }
+            }
+
+            item("decision tree") {
+                actionEvents()
+                        .subscribe { treeService.showDialog(tabsView) }
             }
         }
 
