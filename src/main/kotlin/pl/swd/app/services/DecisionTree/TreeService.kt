@@ -21,6 +21,7 @@ import javax.swing.tree.TreeSelectionModel
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.log2
+import com.google.gson.*
 
 @Service
 class TreeService {
@@ -91,7 +92,7 @@ class TreeService {
                 }
             }
 
-            if (currentNode.decisionClass) {
+            if (currentNode.decisionClass && currentNode.nodeValue == value) {
                 objectClass = currentNode.decisionClassAtr
                 break
             }
@@ -215,11 +216,11 @@ class TreeService {
                     return@forEach
                 }
 
-                it.attributeName = firstAtr.key
-
                 if(it.decisionClass == true) {
                     return@forEach
                 }
+
+                it.attributeName = firstAtr.key
 
                 decomposeTree(it)
                 it.visited = true
@@ -260,22 +261,39 @@ class TreeService {
                 decisionNode.nodeValue = key
                 decisionNode.decisionClassAtr = list.first()
                 decisionNode.parent = node
+                decisionNode.attributeName = decisionColumn.name
                 node.childrens.add(decisionNode)
                 filter.add(key)
             }
         }
-
-        val asd = parentsUnwrap.columnValuesList.map { it.value.toString().toInt() }.distinct().sorted()
 
         for(value in parentsUnwrap.columnValuesList.map { it.value.toString().toInt() }.distinct().sorted()) {
             if (filter.contains(value)) {
                 continue
             }
 
-            val children = TreeNode(decisionColumn, node.attributeColums.filter { it.name != parentsUnwrap.name }, value)
-            children.parent = node
+            if (node.attributeColums.size == 1) {
+                val lastChildren = TreeNode(decisionColumn, ArrayList(), value)
+                lastChildren.parent = node
+                lastChildren.decisionClass = true
+                lastChildren.visited = true
+                lastChildren.nodeValue = value
+                lastChildren.attributeName = decisionColumn.name
 
-            node.childrens.add(children)
+                node.attributeColums.first().columnValuesList.forEachIndexed { index, dataValue ->
+                    if(dataValue.value.toString().toInt() == value) {
+                        lastChildren.decisionClassAtr = node.decisionColumn.columnValuesList[index].value.toString().toInt()
+                        return@forEachIndexed
+                    }
+                }
+
+                node.childrens.add(lastChildren)
+            } else {
+                val children = TreeNode(decisionColumn, node.attributeColums.filter { it.name != parentsUnwrap.name }, value)
+                children.parent = node
+
+                node.childrens.add(children)
+            }
         }
     }
 
@@ -342,8 +360,6 @@ class TreeService {
     }
 
     fun printTree(node: TreeNode) {
-
-
         //int outputattr = numAttributes - 1;
 
         if (node.childrens.size == 0) {
