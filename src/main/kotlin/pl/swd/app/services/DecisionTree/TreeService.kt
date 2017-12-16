@@ -14,6 +14,7 @@ import pl.swd.app.models.DataColumn
 import pl.swd.app.models.DataRow
 import pl.swd.app.models.TreeUserSelectionModel
 import pl.swd.app.services.DiscretizationService
+import pl.swd.app.services.ProjectSaverService
 import tornadofx.*
 import java.util.*
 import javax.swing.tree.TreeSelectionModel
@@ -47,8 +48,8 @@ class TreeService {
                 separateColumn(view.getTreeParameters(), selectedTabIndex)
 
                 val root = buildTree()
-                val qq = checkQuality(root, selectedTabIndex, view.getTreeParameters().decisionClassCol)
-
+                val quality = checkQuality(root, selectedTabIndex, view.getTreeParameters().decisionClassCol)
+                ProjectSaverService.logger.debug { "${quality}" }
                 separateColumn(view.getTreeParameters(), selectedTabIndex)
             }
         }
@@ -69,6 +70,7 @@ class TreeService {
                 valid++
             }
         }
+
 
         return valid / numOfRows
     }
@@ -214,7 +216,10 @@ class TreeService {
                 }
 
                 it.attributeName = firstAtr.key
-                if(it.decisionClass == true) return@forEach
+
+                if(it.decisionClass == true) {
+                    return@forEach
+                }
 
                 decomposeTree(it)
                 it.visited = true
@@ -254,12 +259,15 @@ class TreeService {
                 decisionNode.visited = true
                 decisionNode.nodeValue = key
                 decisionNode.decisionClassAtr = list.first()
+                decisionNode.parent = node
                 node.childrens.add(decisionNode)
-                filter.add(list.first())
+                filter.add(key)
             }
         }
 
-        for(value in parentsUnwrap.columnValuesList.map { it.value.toString().toInt() } .distinct().sorted()) {
+        val asd = parentsUnwrap.columnValuesList.map { it.value.toString().toInt() }.distinct().sorted()
+
+        for(value in parentsUnwrap.columnValuesList.map { it.value.toString().toInt() }.distinct().sorted()) {
             if (filter.contains(value)) {
                 continue
             }
@@ -334,6 +342,7 @@ class TreeService {
     }
 
     fun printTree(node: TreeNode) {
+
 
         //int outputattr = numAttributes - 1;
 
