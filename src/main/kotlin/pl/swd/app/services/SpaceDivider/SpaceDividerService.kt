@@ -2,22 +2,35 @@ package pl.swd.app.services.SpaceDivider
 
 import org.springframework.stereotype.Service
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
 class SpaceDividerService {
     fun startAlgorithm(spaceDividerInput: SpaceDividerInput) {
         val (pointsList) = spaceDividerInput
         val axisesSize = determineAxisesSize(pointsList)
+        val initialSortedAxisesPoints = sortAxisesPointsAscending(pointsList, axisesSize)
         val remainingSortedAxisesPoints = sortAxisesPointsAscending(pointsList, axisesSize)
 
-        val allPotentialCutPoints = ArrayList<PointsToCutResposne>(axisesSize)
-        for (index in 0..axisesSize) {
-            val potentialCutPoints = findPointsToCut(remainingSortedAxisesPoints[index])
-            allPotentialCutPoints.add(index, potentialCutPoints)
-        }
+        /* 1. iteration */
+//        iteration(remainingSortedAxisesPoints, axisesSize)
 
     }
 
+    /**
+     * Validates if every point has the same declared number of axises.
+     * Returns number of axieses
+     */
+    internal fun determineAxisesSize(pointsList: List<SpaceDividerPoint>): Int {
+        if (pointsList.isEmpty()) throw EmptyListException("Points List cannot be empty")
+
+        val probableAxiesesSize = pointsList.first().axisesValues.size
+        val allHasTheSameSize = pointsList.all { it.axisesValues.size == probableAxiesesSize }
+
+        if (!allHasTheSameSize) throw AxisesSizeMissmatchException("Points does not have the same axises values size")
+
+        return probableAxiesesSize
+    }
 
     /**
      * Returns a listof axises.
@@ -34,21 +47,6 @@ class SpaceDividerService {
         }
 
         return sortedAxises
-    }
-
-    /**
-     * Validates if every point has the same declared number of axises.
-     * Returns number of axieses
-     */
-    internal fun determineAxisesSize(pointsList: List<SpaceDividerPoint>): Int {
-        if (pointsList.isEmpty()) throw EmptyListException("Points List cannot be empty")
-
-        val probableAxiesesSize = pointsList.first().axisesValues.size
-        val allHasTheSameSize = pointsList.all { it.axisesValues.size == probableAxiesesSize }
-
-        if (!allHasTheSameSize) throw AxisesSizeMissmatchException("Points does not have the same axises values size")
-
-        return probableAxiesesSize
     }
 
     /**
@@ -85,6 +83,71 @@ class SpaceDividerService {
                 positiveCutPoints = positiveCutPoints
         )
     }
+
+    /**
+     *  Generates a list of all potential points to cut among [remainingSortedAxisesPoints]
+     *  When there are 2 axies it generates:
+     *   * 2 lists for axis X (left and right) or (positive and negative)
+     *   * 2 lists for axis Y (bottom and top) or (positive and negative)
+     */
+    internal fun findAllPotentialCutPoints(remainingSortedAxisesPoints: List<List<SpaceDividerPoint>>, axisesSize: Int): List<PointsToCutResposne> {
+        val allPotentialCutPoints = ArrayList<PointsToCutResposne>(axisesSize)
+        for (index in 0..axisesSize - 1) {
+            val potentialCutPoints = findPointsToCut(remainingSortedAxisesPoints[index])
+            allPotentialCutPoints.add(index, potentialCutPoints)
+        }
+        return allPotentialCutPoints
+    }
+
+    /**
+     * Returns [SpaceDividerPoint] list which has the biggest size from within [allPotentialCutPoints]
+     * When there are several lists with the same size it takes the first one.
+     */
+    internal fun findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints: List<PointsToCutResposne>): PointsToRemoveIn1CutResponse {
+        if (allPotentialCutPoints.isEmpty()) throw EmptyListException("All potential cut points cannot be empty")
+
+        val response = PointsToRemoveIn1CutResponse(
+                axisIndex = 0,
+                isPositive = false,
+                innerPointAxisValue = allPotentialCutPoints.first().negativeCutPoints.last().axisesValues[0],
+                pointsToRemoveIn1Cut = allPotentialCutPoints.first().negativeCutPoints
+        )
+        allPotentialCutPoints.forEachIndexed { index, potentialAxisCutPoints ->
+            if (potentialAxisCutPoints.negativeCutPoints.size > response.pointsToRemoveIn1Cut.size) {
+                with(response) {
+                    axisIndex = index
+                    isPositive = false
+                    innerPointAxisValue = potentialAxisCutPoints.negativeCutPoints.last().axisesValues[index]
+                    pointsToRemoveIn1Cut = potentialAxisCutPoints.negativeCutPoints
+                }
+            }
+            if (potentialAxisCutPoints.positiveCutPoints.size > response.pointsToRemoveIn1Cut.size) {
+                with(response) {
+                    axisIndex = index
+                    isPositive = true
+                    innerPointAxisValue = potentialAxisCutPoints.positiveCutPoints.first().axisesValues[index]
+                    pointsToRemoveIn1Cut = potentialAxisCutPoints.positiveCutPoints
+                }
+            }
+        }
+
+        return response
+    }
+    /**
+     *
+     */
+//    internal fun iteration(remainingSortedAxisesPoints: List<List<SpaceDividerPoint>>, axisesSize: Int) {
+//        val allPotentialCutPoints = findAllPotentialCutPoints(remainingSortedAxisesPoints, axisesSize)
+//        val pointsToRemoveResponse = findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
+//
+//        for (remainingSortedAxisPoints in remainingSortedAxisesPoints) {
+//            val arrList = remainingSortedAxisPoints as ArrayList<SpaceDividerPoint>
+//            arrList.removeIf {
+////                it.
+//            }
+//        }
+//
+//    }
 }
 
 data class SpaceDividerPoint(
@@ -121,6 +184,26 @@ data class SpaceDividerInput(
 data class PointsToCutResposne(
         var positiveCutPoints: List<SpaceDividerPoint>,
         var negativeCutPoints: List<SpaceDividerPoint>
+)
+
+data class PointsToRemoveIn1CutResponse(
+        /**
+         * When we remove points from axis x, this value will be 0
+         */
+        var axisIndex: Int,
+        /**
+         * When we remove points from the right side of the axis it will be true
+         * When we remove points form the left side of the axis it will be false
+         */
+        var isPositive: Boolean,
+        /**
+         * todo
+         */
+        var innerPointAxisValue: Float,
+        /**
+         * List of points to remove from remaining points list
+         */
+        var pointsToRemoveIn1Cut: List<SpaceDividerPoint>
 )
 
 class AxisesSizeMissmatchException(message: String) : Exception(message)

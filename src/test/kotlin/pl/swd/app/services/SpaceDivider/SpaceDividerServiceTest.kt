@@ -205,4 +205,143 @@ class SpaceDividerServiceTest {
             }
         }
     }
+
+    @Nested
+    @ContextConfiguration(locations = arrayOf("/test-beans.xml"))
+    inner class FindAllPotentialCutPoints {
+        @Test
+        fun `should find all potential cut points`() {
+            val remainingSortedAxisesPoints = listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1.0f, 0.5f), "a"),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "b"),
+                            SpaceDividerPoint(arrayOf(2.0f, 2.0f), "c")),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1.0f, 0.5f), "a"),
+                            SpaceDividerPoint(arrayOf(2.0f, 2.0f), "c"),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "b"))
+            )
+
+            val result = spaceDividerService.findAllPotentialCutPoints(remainingSortedAxisesPoints, 2)
+
+            assert(result == listOf(
+                    PointsToCutResposne(
+                            negativeCutPoints = listOf(SpaceDividerPoint(arrayOf(1.0f, 0.5f), "a")),
+                            positiveCutPoints = listOf(SpaceDividerPoint(arrayOf(2.0f, 2.0f), "c"))
+                    ),
+                    PointsToCutResposne(
+                            negativeCutPoints = listOf(SpaceDividerPoint(arrayOf(1.0f, 0.5f), "a")),
+                            positiveCutPoints = listOf(SpaceDividerPoint(arrayOf(1.5f, 3f), "b"))
+                    )
+            ))
+        }
+    }
+
+    @Nested
+    @ContextConfiguration(locations = arrayOf("/test-beans.xml"))
+    inner class FindMostPointsThatCanBeRemovedIn1Cut {
+        @Test
+        fun `should find list with 2 points when there is only 1 list with 2 points`() {
+            val allPotentialCutPoints = listOf(
+                    PointsToCutResposne(
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                                    SpaceDividerPoint(arrayOf(2f, 2f), "b")),
+                            negativeCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(0f, 0f), "c"))
+                    ),
+                    PointsToCutResposne(
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(3f, 3f), "d")),
+                            negativeCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(4f, 4f), "e"))
+                    )
+            )
+
+            val response = spaceDividerService.findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
+
+            assert(response == PointsToRemoveIn1CutResponse(
+                    axisIndex = 0,
+                    isPositive = true,
+                    innerPointAxisValue = 1f,
+                    pointsToRemoveIn1Cut = listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "b"))
+            ))
+        }
+
+        @Test
+        fun `should find the first list with 2 points when there are 3 lists with 2 points`() {
+            val allPotentialCutPoints = listOf(
+                    PointsToCutResposne(
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                                    SpaceDividerPoint(arrayOf(2f, 2f), "b")),
+                            negativeCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(0f, 0f), "c"))
+                    ),
+                    PointsToCutResposne(
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(4f, 4f), "d"),
+                                    SpaceDividerPoint(arrayOf(5f, 5f), "e")),
+                            negativeCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(6f, 6f), "e"),
+                                    SpaceDividerPoint(arrayOf(6f, 6f), "f"))
+                    )
+            )
+
+            val response = spaceDividerService.findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
+
+            assert(response == PointsToRemoveIn1CutResponse(
+                    axisIndex = 0,
+                    isPositive = true,
+                    innerPointAxisValue = 1f,
+                    pointsToRemoveIn1Cut = listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "b"))
+            ))
+        }
+
+        @Test
+        fun `should find the first list with 5 points when there are 2 list with 5 points`() {
+            val allPotentialCutPoints = listOf(
+                    PointsToCutResposne(
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                                    SpaceDividerPoint(arrayOf(2f, 2f), "b")),
+                            negativeCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(3f, 3f), "c"),
+                                    SpaceDividerPoint(arrayOf(4f, 4f), "d"),
+                                    SpaceDividerPoint(arrayOf(5f, 5f), "e"),
+                                    SpaceDividerPoint(arrayOf(6f, 6f), "f"),
+                                    SpaceDividerPoint(arrayOf(7f, 7f), "g"))
+                    ),
+                    PointsToCutResposne(
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(8f, 8f), "h"),
+                                    SpaceDividerPoint(arrayOf(9f, 9f), "i"),
+                                    SpaceDividerPoint(arrayOf(10f, 10f), "j"),
+                                    SpaceDividerPoint(arrayOf(11f, 11f), "k"),
+                                    SpaceDividerPoint(arrayOf(12f, 12f), "l")),
+                            negativeCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(13f, 13f), "m"),
+                                    SpaceDividerPoint(arrayOf(14f, 14f), "n"))
+                    )
+            )
+
+            val response = spaceDividerService.findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
+
+            assert(response == PointsToRemoveIn1CutResponse(
+                    axisIndex = 0,
+                    isPositive = false,
+                    innerPointAxisValue = 7f,
+                    pointsToRemoveIn1Cut = listOf(
+                            SpaceDividerPoint(arrayOf(3f, 3f), "c"),
+                            SpaceDividerPoint(arrayOf(4f, 4f), "d"),
+                            SpaceDividerPoint(arrayOf(5f, 5f), "e"),
+                            SpaceDividerPoint(arrayOf(6f, 6f), "f"),
+                            SpaceDividerPoint(arrayOf(7f, 7f), "g"))
+            ))
+        }
+    }
 }
