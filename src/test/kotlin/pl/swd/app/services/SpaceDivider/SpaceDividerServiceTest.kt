@@ -263,7 +263,7 @@ class SpaceDividerServiceTest {
             assert(response == PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
                     isPositive = true,
-                    innerPointAxisValue = 1f,
+                    cutLineValue = 1f,
                     pointsToRemoveIn1Cut = listOf(
                             SpaceDividerPoint(arrayOf(1f, 1f), "a"),
                             SpaceDividerPoint(arrayOf(2f, 2f), "b"))
@@ -295,7 +295,7 @@ class SpaceDividerServiceTest {
             assert(response == PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
                     isPositive = true,
-                    innerPointAxisValue = 1f,
+                    cutLineValue = 1f,
                     pointsToRemoveIn1Cut = listOf(
                             SpaceDividerPoint(arrayOf(1f, 1f), "a"),
                             SpaceDividerPoint(arrayOf(2f, 2f), "b"))
@@ -334,7 +334,7 @@ class SpaceDividerServiceTest {
             assert(response == PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
                     isPositive = false,
-                    innerPointAxisValue = 7f,
+                    cutLineValue = 7f,
                     pointsToRemoveIn1Cut = listOf(
                             SpaceDividerPoint(arrayOf(3f, 3f), "c"),
                             SpaceDividerPoint(arrayOf(4f, 4f), "d"),
