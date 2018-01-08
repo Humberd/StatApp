@@ -1,11 +1,14 @@
 package pl.swd.app.services.SpaceDivider
 
+import mu.KLogging
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.collections.ArrayList
 
 @Service
 class SpaceDividerService {
+    companion object: KLogging()
+
     fun initializeAlgorithm(pointsList: List<SpaceDividerPoint>): SpaceDividerWorker {
         val axisesSize = determineAxisesSize(pointsList)
         val initialSortedAxisesPoints = sortAxisesPointsAscending(pointsList, axisesSize)
@@ -34,8 +37,21 @@ class SpaceDividerService {
             iterationsResults.add(pointsToRemoveResponse)
             return pointsToRemoveResponse
         }
+
+        fun completeAllIterations() {
+            var i = 0
+            try {
+                while (true) {
+                    nextIteration()
+                    logger.debug { "Iteration ${++i} completed. Remaining size ${remainingSortedAxisesPoints.first().size}" }
+                }
+            } catch (e: IterationsAlreadyCompletedException) {
+
+            }
+        }
+
         internal fun validateOperationsCompleteness() {
-            if (axisesSize <= 0)  {
+            if (axisesSize <= 0) {
                 throw IterationsAlreadyCompletedException("Cannot iterate, because axises size is $axisesSize")
             }
 
@@ -70,13 +86,13 @@ class SpaceDividerService {
      * Each element of a list contains a list of points that are sorted by corresponding axis index
      */
     internal fun sortAxisesPointsAscending(pointsList: List<SpaceDividerPoint>, axisesSize: Int): List<List<SpaceDividerPoint>> {
-        val sortedAxises = ArrayList<ArrayList<SpaceDividerPoint>>(axisesSize)
+        val sortedAxises = ArrayList<LinkedList<SpaceDividerPoint>>(axisesSize)
 
         if (axisesSize == 0) return sortedAxises
 
         for (axisIndex in 0..axisesSize - 1) {
             val sortedPoints = pointsList.sortedWith(Comparator { o1, o2 -> o1.axisesValues[axisIndex].compareTo(o2.axisesValues[axisIndex]) })
-            sortedAxises.add(axisIndex, ArrayList(sortedPoints))
+            sortedAxises.add(axisIndex, LinkedList(sortedPoints))
         }
 
         return sortedAxises
@@ -208,7 +224,7 @@ class SpaceDividerService {
     ) {
         for (remainingSortedAxisPoints in remainingSortedAxisesPoints) {
             /* Remove the point [it] from remaining list when it is inside points to remove list */
-            (remainingSortedAxisPoints as ArrayList).removeIf { potentialPointToRemove ->
+            (remainingSortedAxisPoints as LinkedList).removeIf { potentialPointToRemove ->
                 pointsToRemoveResponse.pointsToRemoveIn1Cut.any { it === potentialPointToRemove }
             }
         }

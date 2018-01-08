@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -143,7 +145,7 @@ class SpaceDividerServiceTest {
         }
 
         @Test
-        fun `should return a list of arraylists`() {
+        fun `should return a list of linked lists`() {
             val points = listOf(
                     SpaceDividerPoint(arrayOf(1.0f, 4.0f), "foo"),
                     SpaceDividerPoint(arrayOf(1.5f, 5.2f), "foo"),
@@ -153,7 +155,7 @@ class SpaceDividerServiceTest {
 
             assertEquals(2, sortedAxises.size)
             for (sortedAxis in sortedAxises) {
-                assert(sortedAxis is ArrayList)
+                assert(sortedAxis is LinkedList)
             }
         }
     }
@@ -528,22 +530,22 @@ class SpaceDividerServiceTest {
             val point1ToRemove = SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0))
             val point2ToRemove = SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0))
             val remainingSortedAxisesPoints = listOf(
-                    arrayListOf(
+                    LinkedList(listOf(
                             point1ToRemove,
                             point2ToRemove,
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
-                    ),
-                    arrayListOf(
+                    )),
+                    LinkedList(listOf(
                             point1ToRemove,
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1)),
                             point2ToRemove,
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
-                    )
+                    ))
             )
             val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
@@ -573,22 +575,22 @@ class SpaceDividerServiceTest {
         @Test
         fun `should not remove 2 points from both arrays when the references does not match`() {
             val remainingSortedAxisesPoints = listOf(
-                    arrayListOf(
+                    LinkedList(listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
-                    ),
-                    arrayListOf(
+                    )),
+                            LinkedList(listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1)),
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
-                    )
+                    ))
             )
             val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
@@ -688,5 +690,109 @@ class SpaceDividerServiceTest {
                 worker.nextIteration()
             }
         }
+
+        @Test
+        fun `100 points, 2 axises, 2 decision classes load test`() {
+            val pointsList = generateRandomPointsList(
+                    numberOfPoints = 100,
+                    pointValuesFrom = 0.0,
+                    pointValuesTo = 50.0,
+                    numberOfAxises = 2,
+                    numberOfDecisionClasses = 2
+            )
+
+            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+            worker.completeAllIterations()
+        }
+
+        @Test
+        fun `10_000 points, 2 axises, 2 decision classes load test`() {
+            val pointsList = generateRandomPointsList(
+                    numberOfPoints = 10_000,
+                    pointValuesFrom = 0.0,
+                    pointValuesTo = 50.0,
+                    numberOfAxises = 2,
+                    numberOfDecisionClasses = 2
+            )
+
+            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+            worker.completeAllIterations()
+        }
+
+        @Test
+        fun `10_000 points, 4 axises, 2 decision classes load test`() {
+            val pointsList = generateRandomPointsList(
+                    numberOfPoints = 10_000,
+                    pointValuesFrom = 0.0,
+                    pointValuesTo = 50.0,
+                    numberOfAxises = 2,
+                    numberOfDecisionClasses = 2
+            )
+
+            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+            worker.completeAllIterations()
+        }
+
+        @Test
+        fun `10_000 points, 4 axises, 5 decision classes load test`() {
+            val pointsList = generateRandomPointsList(
+                    numberOfPoints = 10_000,
+                    pointValuesFrom = 0.0,
+                    pointValuesTo = 50.0,
+                    numberOfAxises = 4,
+                    numberOfDecisionClasses = 5
+            )
+
+            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+            worker.completeAllIterations()
+        }
+
+        /* @Test
+         fun `1_000_000 points, 2 axises, 2 decision classes load test`() {
+             val pointsList = generateRandomPointsList(
+                     numberOfPoints = 1_000_000,
+                     pointValuesFrom = 0.0,
+                     pointValuesTo = 50.0,
+                     numberOfAxises = 2,
+                     numberOfDecisionClasses = 2
+             )
+
+             val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+             worker.completeAllIterations()
+         }*/
+
     }
+}
+
+fun generateRandomPointsList(
+        numberOfPoints: Int,
+        pointValuesFrom: Double,
+        pointValuesTo: Double,
+        numberOfAxises: Int,
+        numberOfDecisionClasses: Int
+): ArrayList<SpaceDividerPoint> {
+    val axisesArrays = ArrayList<DoubleArray>(numberOfAxises)
+    for (i in 0..numberOfAxises - 1) {
+        axisesArrays.add(i, Random().doubles(numberOfPoints.toLong(), pointValuesFrom, pointValuesTo).toArray())
+    }
+
+    val decisionClassesPool = arrayOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z")
+
+    val pointsList = ArrayList<SpaceDividerPoint>(numberOfPoints)
+
+    for (i in 0..numberOfPoints - 1) {
+        val axisesValues = ArrayList<Float>(numberOfAxises)
+        for (j in 0..numberOfAxises - 1) {
+            axisesValues.add(j, axisesArrays[j][i].toFloat())
+        }
+
+        pointsList.add(i, SpaceDividerPoint(axisesValues.toTypedArray(), decisionClassesPool[Random().nextInt(numberOfDecisionClasses)]))
+    }
+
+    return pointsList
 }
