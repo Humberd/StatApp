@@ -43,7 +43,7 @@ class SpaceDividerService {
             try {
                 while (true) {
                     nextIteration()
-                    logger.debug { "Iteration ${++i} completed. Remaining size ${remainingSortedAxisesPoints.first().size}" }
+                    logger.trace { "Iteration ${++i} completed. Remaining size ${remainingSortedAxisesPoints.first().size}" }
                 }
             } catch (e: IterationsAlreadyCompletedException) {
 
@@ -238,7 +238,7 @@ data class SpaceDividerPoint(
          */
         val axisesValues: Array<Float>,
         val decisionClass: String,
-        val vector: ArrayList<Int> = ArrayList()
+        val vector: ArrayList<Byte> = ArrayList()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
