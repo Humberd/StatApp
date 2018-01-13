@@ -7,7 +7,7 @@ import kotlin.collections.ArrayList
 
 @Service
 class SpaceDividerService {
-    companion object: KLogging()
+    companion object : KLogging()
 
     fun initializeAlgorithm(pointsList: List<SpaceDividerPoint>): SpaceDividerWorker {
         val axisesSize = determineAxisesSize(pointsList)
@@ -27,12 +27,21 @@ class SpaceDividerService {
         fun nextIteration(): PointsToRemoveIn1CutResponse {
             validateOperationsCompleteness()
 
-            val allPotentialCutPoints = findAllPotentialCutPoints(remainingSortedAxisesPoints, axisesSize)
-            val pointsToRemoveResponse = findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
+            lateinit var pointsToRemoveResponse: PointsToRemoveIn1CutResponse
+            do {
+                val allPotentialCutPoints = findAllPotentialCutPoints(remainingSortedAxisesPoints, axisesSize)
+                pointsToRemoveResponse = findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
+                if (pointsToRemoveResponse.pointsToRemoveIn1Cut.size == 0) {
+                    removePointsFromRemainingLists(remainingSortedAxisesPoints, listOf(remainingSortedAxisesPoints.first().first()))
+                    continue
+                } else {
+                    break
+                }
+            } while (true)
 
             addVectorValuesToAllPoints(initialSortedAxisesPoints, pointsToRemoveResponse)
 
-            removePointsFromRemainingLists(remainingSortedAxisesPoints, pointsToRemoveResponse)
+            removePointsFromRemainingLists(remainingSortedAxisesPoints, pointsToRemoveResponse.pointsToRemoveIn1Cut)
 
             iterationsResults.add(pointsToRemoveResponse)
             return pointsToRemoveResponse
@@ -105,23 +114,37 @@ class SpaceDividerService {
      *  negativeCutPoints: ["a"]
      *  positiveCutPoints: ["c","c"]
      * }
+     *
+     * There is an edge case when 2 edge points with the same value, but different decision classes
+     * In that case from that edge there are no points to cut
+     * For example: ["a"(1),"b"(1),"c"(2),"c"(3)]
+     * It returns: {
+     *  negativeCutPoints: [] // because right points have the same value (1), but different decision classes "a","b"
+     *  positiveCutPoints: ["c"(3),"c"(2)]
+     * }
      */
-    internal fun findPointsToCut(sortedAxisPoints: List<SpaceDividerPoint>): PointsToCutResposne {
+    internal fun findPointsToCut(sortedAxisPoints: List<SpaceDividerPoint>, axisIndex: Int): PointsToCutResposne {
         if (sortedAxisPoints.isEmpty()) throw EmptyListException("List cannot be empty")
 
         val negativePointDecisionClass = sortedAxisPoints.first().decisionClass
         val negativeCutPoints = arrayListOf<SpaceDividerPoint>()
-        for (i in 0..sortedAxisPoints.size - 1) {
+
+        for (i in 0..sortedAxisPoints.lastIndex) {
+            /* When we have the same values */
             if (sortedAxisPoints[i].decisionClass !== negativePointDecisionClass) {
+                negativeCutPoints.removeIf { it.axisesValues[axisIndex] == sortedAxisPoints[i].axisesValues[axisIndex] }
                 break
             }
             negativeCutPoints.add(sortedAxisPoints[i])
         }
 
+
         val positivePointDecisionClass = sortedAxisPoints.last().decisionClass
         val positiveCutPoints = arrayListOf<SpaceDividerPoint>()
-        for (i in sortedAxisPoints.size - 1 downTo 0) {
+
+        for (i in sortedAxisPoints.lastIndex downTo 0) {
             if (sortedAxisPoints[i].decisionClass !== positivePointDecisionClass) {
+                positiveCutPoints.removeIf { it.axisesValues[axisIndex] == sortedAxisPoints[i].axisesValues[axisIndex] }
                 break
             }
             positiveCutPoints.add(sortedAxisPoints[i])
@@ -142,7 +165,7 @@ class SpaceDividerService {
     internal fun findAllPotentialCutPoints(remainingSortedAxisesPoints: List<List<SpaceDividerPoint>>, axisesSize: Int): List<PointsToCutResposne> {
         val allPotentialCutPoints = ArrayList<PointsToCutResposne>(axisesSize)
         for (index in 0..axisesSize - 1) {
-            val potentialCutPoints = findPointsToCut(remainingSortedAxisesPoints[index])
+            val potentialCutPoints = findPointsToCut(remainingSortedAxisesPoints[index], index)
             allPotentialCutPoints.add(index, potentialCutPoints)
         }
         return allPotentialCutPoints
@@ -153,19 +176,20 @@ class SpaceDividerService {
      * When there are several lists with the same size it takes the first one.
      */
     internal fun findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints: List<PointsToCutResposne>): PointsToRemoveIn1CutResponse {
-        if (allPotentialCutPoints.isEmpty()) throw EmptyListException("All potential cut points cannot be empty")
+        if (allPotentialCutPoints.isEmpty()) throw EmptyListException("All potential cut points list cannot be empty")
 
         val response = PointsToRemoveIn1CutResponse(
                 axisIndex = 0,
                 isPositive = false,
-                cutLineValue = allPotentialCutPoints.first().negativeCutPoints.last().axisesValues[0],
-                pointsToRemoveIn1Cut = allPotentialCutPoints.first().negativeCutPoints
+                cutLineValue = 0f,
+                pointsToRemoveIn1Cut = emptyList()
         )
         allPotentialCutPoints.forEachIndexed { index, potentialAxisCutPoints ->
             if (potentialAxisCutPoints.negativeCutPoints.size > response.pointsToRemoveIn1Cut.size) {
                 with(response) {
                     axisIndex = index
                     isPositive = false
+                    /* first(), because we take the value of the point to the very right */
                     cutLineValue = potentialAxisCutPoints.negativeCutPoints.last().axisesValues[index]
                     pointsToRemoveIn1Cut = potentialAxisCutPoints.negativeCutPoints
                 }
@@ -174,7 +198,8 @@ class SpaceDividerService {
                 with(response) {
                     axisIndex = index
                     isPositive = true
-                    cutLineValue = potentialAxisCutPoints.positiveCutPoints.first().axisesValues[index]
+                    /* last(), because we take the value of the point to the very left */
+                    cutLineValue = potentialAxisCutPoints.positiveCutPoints.last().axisesValues[index]
                     pointsToRemoveIn1Cut = potentialAxisCutPoints.positiveCutPoints
                 }
             }
@@ -197,19 +222,15 @@ class SpaceDividerService {
             pointsToRemoveResponse: PointsToRemoveIn1CutResponse
     ) {
         for (point in initialSortedAxisesPoints[pointsToRemoveResponse.axisIndex]) {
-            if (pointsToRemoveResponse.isPositive) {
-                /* When the value on the axis is on the left to the cut line then we should add 0 to the vector */
-                if (point.axisesValues[pointsToRemoveResponse.axisIndex] < pointsToRemoveResponse.cutLineValue) {
-                    point.vector.add(0)
-                } else {
+            if (point.axisesValues[pointsToRemoveResponse.axisIndex] < pointsToRemoveResponse.cutLineValue) {
+                point.vector.add(0)
+            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] > pointsToRemoveResponse.cutLineValue) {
+                point.vector.add(1)
+            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] == pointsToRemoveResponse.cutLineValue) {
+                if (pointsToRemoveResponse.isPositive) {
                     point.vector.add(1)
-                }
-            } else {
-                /* When the value on the axis is on the left to the cut line OR ON THE CUTLINE then we should add 0 to the vector */
-                if (point.axisesValues[pointsToRemoveResponse.axisIndex] <= pointsToRemoveResponse.cutLineValue) {
-                    point.vector.add(0)
                 } else {
-                    point.vector.add(1)
+                    point.vector.add(0)
                 }
             }
         }
@@ -220,12 +241,12 @@ class SpaceDividerService {
      */
     internal fun removePointsFromRemainingLists(
             remainingSortedAxisesPoints: List<List<SpaceDividerPoint>>,
-            pointsToRemoveResponse: PointsToRemoveIn1CutResponse
+            pointsToRemove: List<SpaceDividerPoint>
     ) {
         for (remainingSortedAxisPoints in remainingSortedAxisesPoints) {
             /* Remove the point [it] from remaining list when it is inside points to remove list */
             (remainingSortedAxisPoints as LinkedList).removeIf { potentialPointToRemove ->
-                pointsToRemoveResponse.pointsToRemoveIn1Cut.any { it === potentialPointToRemove }
+                pointsToRemove.any { it === potentialPointToRemove }
             }
         }
     }
@@ -248,6 +269,7 @@ data class SpaceDividerPoint(
 
         if (!Arrays.equals(axisesValues, other.axisesValues)) return false
         if (decisionClass != other.decisionClass) return false
+        if (vector != other.vector) return false
 
         return true
     }
@@ -255,6 +277,7 @@ data class SpaceDividerPoint(
     override fun hashCode(): Int {
         var result = Arrays.hashCode(axisesValues)
         result = 31 * result + decisionClass.hashCode()
+        result = 31 * result + vector.hashCode()
         return result
     }
 }

@@ -170,17 +170,19 @@ class SpaceDividerServiceTest {
                     SpaceDividerPoint(arrayOf(1.5f, 5.2f), "foo"),
                     SpaceDividerPoint(arrayOf(2.0f, 1.2f), "foo"))
 
-            val result = spaceDividerService.findPointsToCut(points)
+            val result = spaceDividerService.findPointsToCut(points, 0)
 
-            assert(result.negativeCutPoints == listOf(
+            assertEquals(listOf(
                     SpaceDividerPoint(arrayOf(1.0f, 4.0f), "foo"),
                     SpaceDividerPoint(arrayOf(1.5f, 5.2f), "foo"),
-                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "foo")))
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "foo")
+            ), result.negativeCutPoints)
 
-            assert(result.positiveCutPoints == listOf(
+            assertEquals(listOf(
                     SpaceDividerPoint(arrayOf(2.0f, 1.2f), "foo"),
                     SpaceDividerPoint(arrayOf(1.5f, 5.2f), "foo"),
-                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "foo")))
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "foo")
+            ), result.positiveCutPoints)
         }
 
         @Test
@@ -190,13 +192,15 @@ class SpaceDividerServiceTest {
                     SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
                     SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"))
 
-            val result = spaceDividerService.findPointsToCut(points)
+            val result = spaceDividerService.findPointsToCut(points, 0)
 
-            assert(result.negativeCutPoints == listOf(
-                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")))
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
 
-            assert(result.positiveCutPoints == listOf(
-                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")))
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
         }
 
         @Test
@@ -204,13 +208,147 @@ class SpaceDividerServiceTest {
             val points = listOf(
                     SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"))
 
-            val result = spaceDividerService.findPointsToCut(points)
+            val result = spaceDividerService.findPointsToCut(points, 0)
 
-            assert(result.negativeCutPoints == listOf(
-                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")))
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
 
-            assert(result.positiveCutPoints == listOf(
-                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")))
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 1 negative and 2 positive points to cut when 2 positive points have the same axis value and the same decision class`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"),
+                    SpaceDividerPoint(arrayOf(2.0f, 33f), "kota"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 33f), "kota"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 1 negative and 0 positive points to cut when 2 positive points have the same axis value, but different decision classes`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"),
+                    SpaceDividerPoint(arrayOf(2.0f, 33f), "i psa"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
+
+            assertEquals(listOf(), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 2 negative and 1 positive points to cut when 2 negative points have the same axis value and the same decision class`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.0f, 1.3f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.0f, 1.3f), "ala")
+            ), result.negativeCutPoints)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 0 negative and 1 positive points to cut when 2 positive points have the same axis value, but different decision classes`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.0f, 1.3f), "kowalska"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(), result.negativeCutPoints)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 1 negative and 1 positive points to cut when on the left there could be 3, but 2 have the same value, but different classes and the matching class is first`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 1.3f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 1 negative and 1 positive points to cut when on the left there could be 4, but 2 have the same value, but different classes and the 2 matching classes is first`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 1.3f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 1.2f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
+        }
+
+        @Test
+        fun `should find 1 negative and 1 positive points to cut when on the left there could be 3, but 2 have the same value, but different classes and the matching classis not first`() {
+            val points = listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala"),
+                    SpaceDividerPoint(arrayOf(1.5f, 5.2f), "ma"),
+                    SpaceDividerPoint(arrayOf(1.5f, 1.3f), "ala"),
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota"))
+
+            val result = spaceDividerService.findPointsToCut(points, 0)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(1.0f, 4.0f), "ala")
+            ), result.negativeCutPoints)
+
+            assertEquals(listOf(
+                    SpaceDividerPoint(arrayOf(2.0f, 1.2f), "kota")
+            ), result.positiveCutPoints)
         }
 
         @Test
@@ -218,7 +356,7 @@ class SpaceDividerServiceTest {
             val points = emptyList<SpaceDividerPoint>()
 
             assertFailsWith<EmptyListException> {
-                spaceDividerService.findPointsToCut(points)
+                spaceDividerService.findPointsToCut(points, 0)
             }
         }
     }
@@ -261,94 +399,95 @@ class SpaceDividerServiceTest {
         fun `should find list with 2 points when there is only 1 list with 2 points`() {
             val allPotentialCutPoints = listOf(
                     PointsToCutResposne(
-                            positiveCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
-                                    SpaceDividerPoint(arrayOf(2f, 2f), "b")),
                             negativeCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(0f, 0f), "c"))
+                                    SpaceDividerPoint(arrayOf(0f, 0f), "c")),
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(2f, 2f), "b"),
+                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"))
                     ),
                     PointsToCutResposne(
-                            positiveCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(3f, 3f), "d")),
                             negativeCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(4f, 4f), "e"))
+                                    SpaceDividerPoint(arrayOf(4f, 4f), "e")),
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(3f, 3f), "d"))
                     )
             )
 
             val response = spaceDividerService.findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
 
-            assert(response == PointsToRemoveIn1CutResponse(
+            assertEquals(PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
                     isPositive = true,
                     cutLineValue = 1f,
                     pointsToRemoveIn1Cut = listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "a"),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "b"))
-            ))
+                            SpaceDividerPoint(arrayOf(2f, 2f), "b"),
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a"))
+            ), response)
         }
 
         @Test
         fun `should find the first list with 2 points when there are 3 lists with 2 points`() {
             val allPotentialCutPoints = listOf(
                     PointsToCutResposne(
-                            positiveCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
-                                    SpaceDividerPoint(arrayOf(2f, 2f), "b")),
                             negativeCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(0f, 0f), "c"))
+                                    SpaceDividerPoint(arrayOf(0f, 0f), "c")),
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(2f, 2f), "b"),
+                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"))
                     ),
                     PointsToCutResposne(
-                            positiveCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(4f, 4f), "d"),
-                                    SpaceDividerPoint(arrayOf(5f, 5f), "e")),
                             negativeCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(6f, 6f), "e"),
-                                    SpaceDividerPoint(arrayOf(6f, 6f), "f"))
+                                    SpaceDividerPoint(arrayOf(6f, 6f), "f"),
+                                    SpaceDividerPoint(arrayOf(6f, 6f), "e")),
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(5f, 5f), "e"),
+                                    SpaceDividerPoint(arrayOf(4f, 4f), "d"))
                     )
             )
 
             val response = spaceDividerService.findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
 
-            assert(response == PointsToRemoveIn1CutResponse(
+            assertEquals(PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
                     isPositive = true,
                     cutLineValue = 1f,
                     pointsToRemoveIn1Cut = listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "a"),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "b"))
-            ))
+                            SpaceDividerPoint(arrayOf(2f, 2f), "b"),
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a"))
+            ), response)
         }
 
         @Test
         fun `should find the first list with 5 points when there are 2 list with 5 points`() {
             val allPotentialCutPoints = listOf(
                     PointsToCutResposne(
-                            positiveCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
-                                    SpaceDividerPoint(arrayOf(2f, 2f), "b")),
                             negativeCutPoints = listOf(
                                     SpaceDividerPoint(arrayOf(3f, 3f), "c"),
                                     SpaceDividerPoint(arrayOf(4f, 4f), "d"),
                                     SpaceDividerPoint(arrayOf(5f, 5f), "e"),
                                     SpaceDividerPoint(arrayOf(6f, 6f), "f"),
-                                    SpaceDividerPoint(arrayOf(7f, 7f), "g"))
+                                    SpaceDividerPoint(arrayOf(7f, 7f), "g")),
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(2f, 2f), "b"),
+                                    SpaceDividerPoint(arrayOf(1f, 1f), "a"))
                     ),
                     PointsToCutResposne(
-                            positiveCutPoints = listOf(
-                                    SpaceDividerPoint(arrayOf(8f, 8f), "h"),
-                                    SpaceDividerPoint(arrayOf(9f, 9f), "i"),
-                                    SpaceDividerPoint(arrayOf(10f, 10f), "j"),
-                                    SpaceDividerPoint(arrayOf(11f, 11f), "k"),
-                                    SpaceDividerPoint(arrayOf(12f, 12f), "l")),
                             negativeCutPoints = listOf(
                                     SpaceDividerPoint(arrayOf(13f, 13f), "m"),
-                                    SpaceDividerPoint(arrayOf(14f, 14f), "n"))
+                                    SpaceDividerPoint(arrayOf(14f, 14f), "n")),
+                            positiveCutPoints = listOf(
+                                    SpaceDividerPoint(arrayOf(12f, 12f), "l"),
+                                    SpaceDividerPoint(arrayOf(11f, 11f), "k"),
+                                    SpaceDividerPoint(arrayOf(10f, 10f), "j"),
+                                    SpaceDividerPoint(arrayOf(9f, 9f), "i"),
+                                    SpaceDividerPoint(arrayOf(8f, 8f), "h")
+                            )
                     )
             )
 
             val response = spaceDividerService.findMostPointsThatCanBeRemovedIn1Cut(allPotentialCutPoints)
 
-            assert(response == PointsToRemoveIn1CutResponse(
+            assertEquals(PointsToRemoveIn1CutResponse(
                     axisIndex = 0,
                     isPositive = false,
                     cutLineValue = 7f,
@@ -357,8 +496,9 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(4f, 4f), "d"),
                             SpaceDividerPoint(arrayOf(5f, 5f), "e"),
                             SpaceDividerPoint(arrayOf(6f, 6f), "f"),
-                            SpaceDividerPoint(arrayOf(7f, 7f), "g"))
-            ))
+                            SpaceDividerPoint(arrayOf(7f, 7f), "g")
+                    )
+            ), response)
         }
     }
 
@@ -367,22 +507,29 @@ class SpaceDividerServiceTest {
     inner class AddVectorValuesToAllPoints {
         @Test
         fun `should add the first vector points to the 2 first negative points from axis x`() {
+            val a = SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf())
+            val b = SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf())
+            val c = SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf())
+            val d = SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf())
+            val e = SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf())
+            val f = SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf())
+
             val initialSortedAxisesPoints = listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf())
+                            a,
+                            b,
+                            c,
+                            d,
+                            e,
+                            f
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf()),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf())
+                            a,
+                            e,
+                            c,
+                            f,
+                            b,
+                            d
                     )
             )
             val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
@@ -397,7 +544,7 @@ class SpaceDividerServiceTest {
 
             spaceDividerService.addVectorValuesToAllPoints(initialSortedAxisesPoints, pointsToRemoveIn1Cut)
 
-            assert(initialSortedAxisesPoints == listOf(
+            assertEquals(listOf(
                     listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
@@ -414,27 +561,34 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(1))
                     )
-            ))
+            ), initialSortedAxisesPoints)
         }
 
         @Test
         fun `should add the second vector points to the 1 first positive points from axis y`() {
+            val a = SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0))
+            val b = SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0))
+            val c = SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0))
+            val d = SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
+            val e = SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0))
+            val f = SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
+
             val initialSortedAxisesPoints = listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
+                            a,
+                            b,
+                            c,
+                            d,
+                            e,
+                            f
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
+                            a,
+                            e,
+                            c,
+                            f,
+                            b,
+                            d
                     )
             )
             val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
@@ -448,7 +602,7 @@ class SpaceDividerServiceTest {
 
             spaceDividerService.addVectorValuesToAllPoints(initialSortedAxisesPoints, pointsToRemoveIn1Cut)
 
-            assert(initialSortedAxisesPoints == listOf(
+            assertEquals(listOf(
                     listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0, 0)),
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0, 0)),
@@ -465,27 +619,34 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0, 0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0, 1))
                     )
-            ))
+            ), initialSortedAxisesPoints)
         }
 
         @Test
         fun `should add the second vector points to the 2 middle positive points from axis y`() {
+            val a = SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0))
+            val b = SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0))
+            val c = SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0))
+            val d = SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
+            val e = SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0))
+            val f = SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
+
             val initialSortedAxisesPoints = listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
+                            a,
+                            b,
+                            c,
+                            d,
+                            e,
+                            f
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
+                            a,
+                            e,
+                            c,
+                            f,
+                            b,
+                            d
                     )
             )
             val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
@@ -500,7 +661,7 @@ class SpaceDividerServiceTest {
 
             spaceDividerService.addVectorValuesToAllPoints(initialSortedAxisesPoints, pointsToRemoveIn1Cut)
 
-            assert(initialSortedAxisesPoints == listOf(
+            assertEquals(listOf(
                     listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0, 0)),
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0, 1)),
@@ -517,7 +678,7 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0, 1)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0, 1))
                     )
-            ))
+            ), initialSortedAxisesPoints)
         }
     }
 
@@ -547,16 +708,11 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
                     ))
             )
-            val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
-                    axisIndex = 0,
-                    isPositive = false,
-                    cutLineValue = 2f,
-                    pointsToRemoveIn1Cut = listOf(point1ToRemove, point2ToRemove)
-            )
+            val pointsToRemove = listOf(point1ToRemove, point2ToRemove)
 
-            spaceDividerService.removePointsFromRemainingLists(remainingSortedAxisesPoints, pointsToRemoveIn1Cut)
+            spaceDividerService.removePointsFromRemainingLists(remainingSortedAxisesPoints, pointsToRemove)
 
-            assert(remainingSortedAxisesPoints == listOf(
+            assertEquals(listOf(
                     listOf(
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0)),
@@ -569,7 +725,7 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
                     )
-            ))
+            ), remainingSortedAxisesPoints)
         }
 
         @Test
@@ -583,7 +739,7 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
                     )),
-                            LinkedList(listOf(
+                    LinkedList(listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
@@ -592,20 +748,15 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
                     ))
             )
-            val pointsToRemoveIn1Cut = PointsToRemoveIn1CutResponse(
-                    axisIndex = 0,
-                    isPositive = false,
-                    cutLineValue = 2f,
-                    pointsToRemoveIn1Cut = listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0))
-                    )
+            val pointsToRemove = listOf(
+                    SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
+                    SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0))
             )
 
-            spaceDividerService.removePointsFromRemainingLists(remainingSortedAxisesPoints, pointsToRemoveIn1Cut)
+            spaceDividerService.removePointsFromRemainingLists(remainingSortedAxisesPoints, pointsToRemove)
 
-            assert(remainingSortedAxisesPoints == listOf(
-                    arrayListOf(
+            assertEquals(listOf(
+                    listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
@@ -613,7 +764,7 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
                     ),
-                    arrayListOf(
+                    listOf(
                             SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
@@ -621,7 +772,7 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
                             SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
                     )
-            ))
+            ), remainingSortedAxisesPoints)
         }
     }
 
@@ -636,7 +787,13 @@ class SpaceDividerServiceTest {
                     SpaceDividerPoint(arrayOf(1.5f, 3f), "a"),
                     SpaceDividerPoint(arrayOf(4f, 2f), "a")
             )
-            val initialSortedPoints = listOf(
+
+            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+            assertEquals(2, worker.axisesSize)
+            /* Make sure 2 lists have the same content before 1 iteration */
+            assertEquals(worker.initialSortedAxisesPoints, worker.remainingSortedAxisesPoints)
+            assertEquals(listOf(
                     listOf(
                             SpaceDividerPoint(arrayOf(1f, 1f), "c"),
                             SpaceDividerPoint(arrayOf(1.5f, 3f), "a"),
@@ -649,41 +806,59 @@ class SpaceDividerServiceTest {
                             SpaceDividerPoint(arrayOf(4f, 2f), "a"),
                             SpaceDividerPoint(arrayOf(1.5f, 3f), "a")
                     )
-            )
-
-            val worker = spaceDividerService.initializeAlgorithm(pointsList)
-
-            assertEquals(2, worker.axisesSize)
-            /* Make sure 2 lists have the same content before 1 iteration */
-            assert(worker.initialSortedAxisesPoints == worker.remainingSortedAxisesPoints)
-            assert(worker.remainingSortedAxisesPoints == initialSortedPoints)
+            ), worker.remainingSortedAxisesPoints)
 
             /* 1st iteration */
             worker.nextIteration()
-
-            assert(worker.initialSortedAxisesPoints == initialSortedPoints)
-            assert(worker.remainingSortedAxisesPoints == listOf(
+            assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "c"),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b")
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "c"),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b")
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1))
                     )
-            ))
+            ), worker.initialSortedAxisesPoints)
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0))
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0))
+                    )
+            ), worker.remainingSortedAxisesPoints)
 
             /* 2nd iteration */
             worker.nextIteration()
-            assert(worker.initialSortedAxisesPoints == initialSortedPoints)
-            assert(worker.remainingSortedAxisesPoints == listOf(
+            assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b")
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0, 0)),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1, 1)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1, 1))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b")
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0, 0)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1, 1)),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1, 1))
                     )
-            ))
+            ), worker.initialSortedAxisesPoints)
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1))
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1))
+                    )
+            ), worker.remainingSortedAxisesPoints)
 
             /* 3rd iteration */
             assertFailsWith<IterationsAlreadyCompletedException> {
@@ -692,6 +867,93 @@ class SpaceDividerServiceTest {
         }
 
         @Test
+        fun `edge case, 4 points, no points to remove in 1 cut, but points with different decision classes still not cut availalble, need to remove 1 point from remaining points list`() {
+            val pointsList = listOf(
+                    SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                    SpaceDividerPoint(arrayOf(1f, 2f), "b"),
+                    SpaceDividerPoint(arrayOf(2f, 1f), "b"),
+                    SpaceDividerPoint(arrayOf(2f, 2f), "a")
+            )
+
+            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+
+            assertEquals(2, worker.axisesSize)
+            /* Make sure 2 lists have the same content before 1 iteration */
+            assertEquals(worker.initialSortedAxisesPoints, worker.remainingSortedAxisesPoints)
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b"),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b"),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a")
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a"),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b"),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b"),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a")
+                    )
+            ), worker.remainingSortedAxisesPoints)
+
+            /* 1st iteration */
+            worker.nextIteration()
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                    )
+            ), worker.initialSortedAxisesPoints)
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                    )
+            ), worker.remainingSortedAxisesPoints)
+
+            /* 2nd iteration */
+            worker.nextIteration()
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0, 0)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1, 0)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0, 0)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1, 0)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                    )
+            ), worker.initialSortedAxisesPoints)
+            assertEquals(listOf(
+                    listOf(
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                    ),
+                    listOf(
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                    )
+            ), worker.remainingSortedAxisesPoints)
+
+            /* 3rd iteration */
+            assertFailsWith<IterationsAlreadyCompletedException> {
+                worker.nextIteration()
+            }
+        }
+
+        /*@Test
         fun `100 points, 2 axises, 2 decision classes load test`() {
             val pointsList = generateRandomPointsList(
                     numberOfPoints = 100,
@@ -704,9 +966,9 @@ class SpaceDividerServiceTest {
             val worker = spaceDividerService.initializeAlgorithm(pointsList)
 
             worker.completeAllIterations()
-        }
+        }*/
 
-        @Test
+        /*@Test
         fun `10_000 points, 2 axises, 2 decision classes load test`() {
             val pointsList = generateRandomPointsList(
                     numberOfPoints = 10_000,
@@ -719,7 +981,7 @@ class SpaceDividerServiceTest {
             val worker = spaceDividerService.initializeAlgorithm(pointsList)
 
             worker.completeAllIterations()
-        }
+        }*/
 
         /*@Test
         fun `10_000 points, 4 axises, 2 decision classes load test`() {
@@ -736,7 +998,7 @@ class SpaceDividerServiceTest {
             worker.completeAllIterations()
         }*/
 
-        /*@Test
+        @Test
         fun `10_000 points, 4 axises, 5 decision classes load test`() {
             val pointsList = generateRandomPointsList(
                     numberOfPoints = 10_000,
@@ -749,7 +1011,7 @@ class SpaceDividerServiceTest {
             val worker = spaceDividerService.initializeAlgorithm(pointsList)
 
             worker.completeAllIterations()
-        }*/
+        }
 
         /* @Test
          fun `1_000_000 points, 2 axises, 2 decision classes load test`() {
