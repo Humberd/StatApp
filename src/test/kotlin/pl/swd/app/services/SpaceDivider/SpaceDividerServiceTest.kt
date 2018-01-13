@@ -998,7 +998,7 @@ class SpaceDividerServiceTest {
             worker.completeAllIterations()
         }*/
 
-        @Test
+        /*@Test
         fun `10_000 points, 4 axises, 5 decision classes load test`() {
             val pointsList = generateRandomPointsList(
                     numberOfPoints = 10_000,
@@ -1011,7 +1011,7 @@ class SpaceDividerServiceTest {
             val worker = spaceDividerService.initializeAlgorithm(pointsList)
 
             worker.completeAllIterations()
-        }
+        }*/
 
         /* @Test
          fun `1_000_000 points, 2 axises, 2 decision classes load test`() {

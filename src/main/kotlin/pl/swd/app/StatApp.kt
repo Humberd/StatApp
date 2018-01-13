@@ -16,8 +16,8 @@ class StatApp : App(MainView::class) {
     companion object : KLogging()
 
     /**
-     * Here I'm initializing a Spring application context,
-     * so that I can inject Spring beans using: `by di()`
+     * Initializing a Spring application context,
+     * so that we can inject Spring beans using: `by di()`
      */
     override fun init() {
         super.init()

@@ -14,6 +14,7 @@ import pl.swd.app.services.DataFileParser.DataFileParserService
 import pl.swd.app.services.DecisionTree.TreeService
 import pl.swd.app.views.modals.Chart2DConfigModal
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
+import pl.swd.app.views.modals.SpaceDividerConfigModal
 import tornadofx.*
 import java.io.File
 
@@ -121,6 +122,11 @@ class MenuBarView : View("My View") {
             item("decision tree") {
                 actionEvents()
                         .subscribe { treeService.showDialog(tabsView) }
+            }
+
+            item("Space divider") {
+                actionEvents()
+                        .subscribe { find(SpaceDividerConfigModal::class).openWindow() }
             }
         }
 
