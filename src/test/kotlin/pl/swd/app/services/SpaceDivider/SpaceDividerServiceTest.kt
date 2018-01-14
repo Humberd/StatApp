@@ -537,8 +537,8 @@ class SpaceDividerServiceTest {
                     isPositive = false,
                     cutLineValue = 2f,
                     pointsToRemoveIn1Cut = listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a"),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b")
+                            a,
+                            b
                     )
             )
 
@@ -546,20 +546,20 @@ class SpaceDividerServiceTest {
 
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
+                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(1))
+                            SpaceDividerPoint(arrayOf(1f, 0.5f), "a", arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(5.2f, 1.2f), "e", arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 4.2f), "b", arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
                     )
             ), initialSortedAxisesPoints)
         }
@@ -596,7 +596,7 @@ class SpaceDividerServiceTest {
                     isPositive = true,
                     cutLineValue = 7.4f,
                     pointsToRemoveIn1Cut = listOf(
-                            SpaceDividerPoint(arrayOf(5f, 7.4f), "d", arrayListOf(0))
+                            d
                     )
             )
 
@@ -654,8 +654,8 @@ class SpaceDividerServiceTest {
                     isPositive = true,
                     cutLineValue = 1.5f,
                     pointsToRemoveIn1Cut = listOf(
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "c", arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(6f, 1.5f), "f", arrayListOf(1))
+                            c,
+                            f
                     )
             )
 
@@ -839,24 +839,24 @@ class SpaceDividerServiceTest {
             worker.nextIteration()
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0, 0)),
-                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1, 1)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1)),
-                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1, 1))
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1, 0)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 0)),
+                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1, 0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0, 0)),
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1)),
-                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1, 1)),
-                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1, 1))
+                            SpaceDividerPoint(arrayOf(1f, 1f), "c", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 0)),
+                            SpaceDividerPoint(arrayOf(4f, 2f), "a", vector = arrayListOf(1, 0)),
+                            SpaceDividerPoint(arrayOf(1.5f, 3f), "a", vector = arrayListOf(1, 0))
                     )
             ), worker.initialSortedAxisesPoints)
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1))
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 1))
+                            SpaceDividerPoint(arrayOf(3f, 1.5f), "b", vector = arrayListOf(0, 0))
                     )
             ), worker.remainingSortedAxisesPoints)
 
@@ -899,26 +899,26 @@ class SpaceDividerServiceTest {
             worker.nextIteration()
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0)),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(1)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0))
                     )
             ), worker.initialSortedAxisesPoints)
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1)),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1))
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(0)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0))
                     )
             ), worker.remainingSortedAxisesPoints)
 
@@ -926,24 +926,24 @@ class SpaceDividerServiceTest {
             worker.nextIteration()
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0, 0)),
-                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0, 1)),
-                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1, 0)),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(1, 1)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(1, 0)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0, 0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(0, 0)),
-                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(1, 0)),
-                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(0, 1)),
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                            SpaceDividerPoint(arrayOf(1f, 1f), "a", vector = arrayListOf(1, 1)),
+                            SpaceDividerPoint(arrayOf(2f, 1f), "b", vector = arrayListOf(0, 1)),
+                            SpaceDividerPoint(arrayOf(1f, 2f), "b", vector = arrayListOf(1, 0)),
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0, 0))
                     )
             ), worker.initialSortedAxisesPoints)
             assertEquals(listOf(
                     listOf(
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0, 0))
                     ),
                     listOf(
-                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(1, 1))
+                            SpaceDividerPoint(arrayOf(2f, 2f), "a", vector = arrayListOf(0, 0))
                     )
             ), worker.remainingSortedAxisesPoints)
 

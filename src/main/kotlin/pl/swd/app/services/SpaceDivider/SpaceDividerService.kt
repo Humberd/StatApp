@@ -209,29 +209,35 @@ class SpaceDividerService {
     }
 
     /**
+     * INVALID - RETYPE
      * When providing axis with values [1,2,3,4,5,6,7] and a [cutlineValue] of 5 with [positive] cut
      * It will add vector values like this [1(0), 2(0), 3(0), 4(0), 5(1), 6(1), 7(1)]
      *
      * When providing axis with values [1,2,3,4,5,6,7] and a [cutlineValue] of 5 with [negative] cut
      * It will add vector values like this [1(0), 2(0), 3(0), 4(0), 5(0), 6(1), 7(1)]
      *
-     * Take a look at value 5(*). When the cut is positive the [1] value in a vector in inclusive
+     * Take a look at value 5(*). When the cut is positive the [1] value in a vector is inclusive
      */
     internal fun addVectorValuesToAllPoints(
             initialSortedAxisesPoints: List<List<SpaceDividerPoint>>,
             pointsToRemoveResponse: PointsToRemoveIn1CutResponse
     ) {
+
         for (point in initialSortedAxisesPoints[pointsToRemoveResponse.axisIndex]) {
-            if (point.axisesValues[pointsToRemoveResponse.axisIndex] < pointsToRemoveResponse.cutLineValue) {
-                point.vector.add(0)
-            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] > pointsToRemoveResponse.cutLineValue) {
-                point.vector.add(1)
-            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] == pointsToRemoveResponse.cutLineValue) {
+            if (point.axisesValues[pointsToRemoveResponse.axisIndex] > pointsToRemoveResponse.cutLineValue) {
                 if (pointsToRemoveResponse.isPositive) {
-                    point.vector.add(1)
+                    point.vector.add(0b1)
                 } else {
-                    point.vector.add(0)
+                    point.vector.add(0b0)
                 }
+            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] < pointsToRemoveResponse.cutLineValue){
+                if (pointsToRemoveResponse.isPositive) {
+                    point.vector.add(0b0)
+                } else {
+                    point.vector.add(0b1)
+                }
+            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] == pointsToRemoveResponse.cutLineValue) {
+                point.vector.add(0b1)
             }
         }
     }
