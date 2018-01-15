@@ -11,6 +11,7 @@ import pl.swd.app.services.SpaceDivider.SpaceDividerPoint
 import pl.swd.app.services.SpaceDivider.SpaceDividerService
 import pl.swd.app.utils.emptyObservableList
 import tornadofx.*
+import java.io.File
 
 class SpaceDividerResultsModal : Modal("Space Divider Result") {
     companion object : KLogging()
@@ -24,31 +25,31 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     override val root = borderpane {
         center {
             if (showChart) {
-                vbox {
-                    add(ScatterChart(NumberAxis(), NumberAxis()).apply {
-                        val seriesMap: HashMap<String, XYChart.Series<Number, Number>> = HashMap()
+vbox {
+    add(ScatterChart(NumberAxis(), NumberAxis()).apply {
+        val seriesMap: HashMap<String, XYChart.Series<Number, Number>> = HashMap()
 
-                        pointsList
-                                .map { it.decisionClass }
-                                .distinct()
-                                .forEach {
-                                    seriesMap.put(it, XYChart.Series())
-                                }
-
-                        for (point in pointsList) {
-                            seriesMap.get(point.decisionClass)?.data(point.axisesValues[0], point.axisesValues[1])
-                        }
-
-                        seriesMap
-                                .toSortedMap()
-                                .forEach { key, value ->
-                                    value.name = key
-                                    data.add(value)
-                                }
-
-                        id = "bifurcation-diagram"
-                    })
+        pointsList
+                .map { it.decisionClass }
+                .distinct()
+                .forEach {
+                    seriesMap.put(it, XYChart.Series())
                 }
+
+        for (point in pointsList) {
+            seriesMap.get(point.decisionClass)?.data(point.axisesValues[0], point.axisesValues[1])
+        }
+
+        seriesMap
+                .toSortedMap()
+                .forEach { key, value ->
+                    value.name = key
+                    data.add(value)
+                }
+        (xAxis as NumberAxis).setForceZeroInRange(false)
+        (yAxis as NumberAxis).setForceZeroInRange(false)
+    })
+}
             }
         }
         right {

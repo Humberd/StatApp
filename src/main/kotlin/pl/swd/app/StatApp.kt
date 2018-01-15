@@ -5,12 +5,10 @@ import javafx.stage.Stage
 import mu.KLogging
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import pl.swd.app.configs.InitConfiguration
-import pl.swd.app.models.Chart2dAxis
-import pl.swd.app.models.Chart2dData
 import pl.swd.app.views.MainView
-import pl.swd.app.views.modals.Chart2DModal
 import tornadofx.*
 import kotlin.reflect.KClass
+
 
 class StatApp : App(MainView::class) {
     companion object : KLogging()

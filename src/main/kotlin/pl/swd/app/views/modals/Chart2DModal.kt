@@ -54,7 +54,8 @@ class Chart2DModal : Modal() {
                                             value.name = key
                                             data.add(value)
                                         }
-                                xAxis.autoRangingProperty()
+                                (xAxis as NumberAxis).setForceZeroInRange(false)
+                                (yAxis as NumberAxis).setForceZeroInRange(false)
 //
 //                                (xAxis as NumberAxis).apply {
 //                                    setAutoRanging(true)
@@ -95,6 +96,8 @@ class Chart2DModal : Modal() {
                                             value.name = key
                                             data.add(value)
                                         }
+
+                                (xAxis as NumberAxis).setForceZeroInRange(false)
                             }
                 }
                 /* X - Strings, Y - Numbers */
@@ -127,6 +130,8 @@ class Chart2DModal : Modal() {
                                             value.name = key
                                             data.add(value)
                                         }
+
+                                (yAxis as NumberAxis).setForceZeroInRange(false)
                             }
                 }
                 /* X- Strings, Y - String */
