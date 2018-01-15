@@ -8,6 +8,8 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.ScatterChart
 import javafx.scene.chart.XYChart
 import javafx.scene.control.TableView
+import javafx.scene.shape.Line
+import javafx.scene.shape.Shape
 import mu.KLogging
 import pl.swd.app.services.SpaceDivider.IterationsAlreadyCompletedException
 import pl.swd.app.services.SpaceDivider.PointsToRemoveIn1CutResponse
@@ -24,12 +26,43 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     val showChart: Boolean by param()
     var resultsTable: TableView<PointsToRemoveIn1CutResponse> by singleAssign()
     var worker: SpaceDividerService.SpaceDividerWorker? = null
+    var chart: ScatterChart<Number, Number> by singleAssign()
 
     override val root = borderpane {
         center {
             if (showChart) {
                 vbox {
-                    add(ScatterChart(NumberAxis(), NumberAxis()).apply {
+                    chart = object : ScatterChart<Number, Number>(NumberAxis(), NumberAxis()) {
+
+                        val lines = arrayListOf<Shape>()
+
+                        override fun layoutPlotChildren() {
+                            super.layoutPlotChildren()
+                            plotChildren.removeAll(lines)
+                            lines.clear()
+                            for (result in (worker?.iterationsResults ?: emptyList<PointsToRemoveIn1CutResponse>())) {
+                                if (result.axisIndex == 0) {
+                                    lines.add(
+                                            Line(
+                                                    xAxis.getDisplayPosition(result.cutLineValue),
+                                                    height,
+                                                    xAxis.getDisplayPosition(result.cutLineValue),
+                                                    0.0)
+                                    )
+                                } else {
+                                    lines.add(
+                                            Line(
+                                                    0.0,
+                                                    yAxis.getDisplayPosition(result.cutLineValue),
+                                                    width,
+                                                    yAxis.getDisplayPosition(result.cutLineValue))
+                                    )
+                                }
+                            }
+                            plotChildren.addAll(lines)
+                            logger.trace { "Plot refresh" }
+                        }
+                    }.apply {
                         val seriesMap: HashMap<String, XYChart.Series<Number, Number>> = HashMap()
 
                         pointsList
@@ -51,7 +84,8 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                                 }
                         (xAxis as NumberAxis).setForceZeroInRange(false)
                         (yAxis as NumberAxis).setForceZeroInRange(false)
-                    })
+                    }
+                    add(chart)
                 }
             }
         }
