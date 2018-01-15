@@ -1,5 +1,8 @@
 package pl.swd.app.views.modals
 
+import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.ScatterChart
+import javafx.scene.chart.XYChart
 import javafx.scene.control.TableView
 import mu.KLogging
 import pl.swd.app.services.SpaceDivider.IterationsAlreadyCompletedException
@@ -14,10 +17,40 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
 
     val spaceDividerService: SpaceDividerService by di()
     val pointsList: List<SpaceDividerPoint> by param()
+    val showChart: Boolean by param()
     var resultsTable: TableView<PointsToRemoveIn1CutResponse> by singleAssign()
     var worker: SpaceDividerService.SpaceDividerWorker? = null
 
     override val root = borderpane {
+        center {
+            if (showChart) {
+                vbox {
+                    add(ScatterChart(NumberAxis(), NumberAxis()).apply {
+                        val seriesMap: HashMap<String, XYChart.Series<Number, Number>> = HashMap()
+
+                        pointsList
+                                .map { it.decisionClass }
+                                .distinct()
+                                .forEach {
+                                    seriesMap.put(it, XYChart.Series())
+                                }
+
+                        for (point in pointsList) {
+                            seriesMap.get(point.decisionClass)?.data(point.axisesValues[0], point.axisesValues[1])
+                        }
+
+                        seriesMap
+                                .toSortedMap()
+                                .forEach { key, value ->
+                                    value.name = key
+                                    data.add(value)
+                                }
+
+                        id = "bifurcation-diagram"
+                    })
+                }
+            }
+        }
         right {
             vbox {
                 button("Next Iteration") {

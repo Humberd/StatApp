@@ -96,7 +96,8 @@ class SpaceDividerConfigModal : Modal("Space Divider Config") {
                 action {
                     val pointsList = generateSpaceDivierPointsList()
                     find(SpaceDividerResultsModal::class, mapOf(
-                            SpaceDividerResultsModal::pointsList to pointsList
+                            SpaceDividerResultsModal::pointsList to pointsList,
+                            SpaceDividerResultsModal::showChart to (model.chart2DCheckbox.value && model.selectedColumns.value.size == 2)
                     )).openWindow()
                     close()
                 }
