@@ -47,16 +47,19 @@ class SpaceDividerService {
             return pointsToRemoveResponse
         }
 
-        fun completeAllIterations() {
+        fun completeAllIterations(): List<PointsToRemoveIn1CutResponse> {
+            val nextIterationsList = ArrayList<PointsToRemoveIn1CutResponse>()
             var i = 0
             try {
                 while (true) {
-                    nextIteration()
+                    nextIterationsList.add(nextIteration())
                     logger.trace { "Iteration ${++i} completed. Remaining size ${remainingSortedAxisesPoints.first().size}" }
                 }
             } catch (e: IterationsAlreadyCompletedException) {
 
             }
+
+            return nextIterationsList
         }
 
         internal fun validateOperationsCompleteness() {

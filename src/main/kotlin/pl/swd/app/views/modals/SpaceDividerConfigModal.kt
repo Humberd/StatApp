@@ -9,7 +9,6 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import mu.KLogging
 import pl.swd.app.models.DataColumn
-import pl.swd.app.models.DataValue
 import pl.swd.app.models.SpreadSheet
 import pl.swd.app.services.ProjectService
 import pl.swd.app.services.SpaceDivider.SpaceDividerPoint
@@ -94,12 +93,18 @@ class SpaceDividerConfigModal : Modal("Space Divider Config") {
             button("Start") {
                 shortcut(KeyCodeCombination(KeyCode.ENTER))
                 enableWhen(model.valid)
-                action { generateSpaceDivierPointsList() }
+                action {
+                    val pointsList = generateSpaceDivierPointsList()
+                    find(SpaceDividerResultsModal::class, mapOf(
+                            SpaceDividerResultsModal::pointsList to pointsList
+                    )).openWindow()
+                    close()
+                }
             }
         }
     }
 
-    private fun generateSpaceDivierPointsList() {
+    private fun generateSpaceDivierPointsList(): List<SpaceDividerPoint> {
         val decisionClassColumn = model.selectedDecisionClassColumn.value
         val axisColumns = model.selectedColumns.value
 
@@ -115,7 +120,7 @@ class SpaceDividerConfigModal : Modal("Space Divider Config") {
             ))
         }
 
-        println(pointsList)
+        return pointsList
     }
 
     class SpaceDividerConfigViewModel : ViewModel() {
