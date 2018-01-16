@@ -4,6 +4,7 @@ import com.github.thomasnield.rxkotlinfx.actionEvents
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import javafx.scene.chart.Axis
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.ScatterChart
 import javafx.scene.chart.XYChart
@@ -26,14 +27,13 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     val showChart: Boolean by param()
     var resultsTable: TableView<PointsToRemoveIn1CutResponse> by singleAssign()
     var worker: SpaceDividerService.SpaceDividerWorker? = null
-    var chart: ScatterChart<Number, Number> by singleAssign()
+    var chart: BetterScatterChart<Number, Number> by singleAssign()
 
     override val root = borderpane {
         center {
             if (showChart) {
                 vbox {
-                    chart = object : ScatterChart<Number, Number>(NumberAxis(), NumberAxis()) {
-
+                    chart = object : BetterScatterChart<Number, Number>(NumberAxis(), NumberAxis()) {
                         val lines = arrayListOf<Shape>()
 
                         override fun layoutPlotChildren() {
@@ -111,6 +111,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                                 }
 
                                 resultsTable.items.addAll(results)
+                                chart.refresh()
                             }
                             .subscribe()
                 }
@@ -126,12 +127,14 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                                 }
 
                                 resultsTable.items.addAll(results)
+                                chart.refresh()
                             }
                             .subscribe()
                 }
                 button("Reset") {
                     action {
                         initializeAlgorithm()
+                        chart.refresh()
                     }
                 }
 
@@ -162,12 +165,20 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     }
 
     fun initializeAlgorithm() {
-        worker = spaceDividerService.initializeAlgorithm(pointsList)
+        val newList = ArrayList(pointsList)
+                .map { it.copy(vector = arrayListOf()) }
+        worker = spaceDividerService.initializeAlgorithm(newList)
         resultsTable.items = emptyObservableList()
     }
 
     fun showAllIterationsCompletedDialog() {
         information("No more iterations",
                 "The are not points left to cut. Algorithm completed")
+    }
+}
+
+open class BetterScatterChart<T,P>(xAxis: Axis<T>?, yAxis: Axis<P>?) : ScatterChart<T, P>(xAxis, yAxis) {
+    fun refresh() {
+        requestChartLayout()
     }
 }

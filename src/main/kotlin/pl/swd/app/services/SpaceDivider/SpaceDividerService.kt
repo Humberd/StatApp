@@ -134,7 +134,7 @@ class SpaceDividerService {
 
         for (i in 0..sortedAxisPoints.lastIndex) {
             /* When we have the same values */
-            if (sortedAxisPoints[i].decisionClass !== negativePointDecisionClass) {
+            if (sortedAxisPoints[i].decisionClass != negativePointDecisionClass) {
                 negativeCutPoints.removeIf { it.axisesValues[axisIndex] == sortedAxisPoints[i].axisesValues[axisIndex] }
                 break
             }
@@ -146,7 +146,7 @@ class SpaceDividerService {
         val positiveCutPoints = arrayListOf<SpaceDividerPoint>()
 
         for (i in sortedAxisPoints.lastIndex downTo 0) {
-            if (sortedAxisPoints[i].decisionClass !== positivePointDecisionClass) {
+            if (sortedAxisPoints[i].decisionClass != positivePointDecisionClass) {
                 positiveCutPoints.removeIf { it.axisesValues[axisIndex] == sortedAxisPoints[i].axisesValues[axisIndex] }
                 break
             }
