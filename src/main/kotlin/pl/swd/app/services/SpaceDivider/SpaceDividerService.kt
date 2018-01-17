@@ -67,11 +67,18 @@ class SpaceDividerService {
                 throw IterationsAlreadyCompletedException("Cannot iterate, because axises size is $axisesSize")
             }
 
+            if (remainingSortedAxisesPoints.first().isEmpty()) {
+                throw IterationsAlreadyCompletedException("Not remaining points left")
+            }
+
             val potentialOnlyDecisionClass = remainingSortedAxisesPoints.first().first().decisionClass
+            val potentialSameAxisesValues = remainingSortedAxisesPoints.first().first().axisesValues
 
             /* When every remaining point has the same decision class */
             if (remainingSortedAxisesPoints.all { remainingSortedAxisPoints ->
-                remainingSortedAxisPoints.all { it.decisionClass.equals(potentialOnlyDecisionClass) }
+                remainingSortedAxisPoints.all {
+                    it.decisionClass.equals(potentialOnlyDecisionClass) || it.axisesValues.equals(potentialSameAxisesValues)
+                }
             }) {
                 throw IterationsAlreadyCompletedException("Every remaining point has the same decision class")
             }
@@ -233,7 +240,7 @@ class SpaceDividerService {
                 } else {
                     point.vector.add(0b0)
                 }
-            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] < pointsToRemoveResponse.cutLineValue){
+            } else if (point.axisesValues[pointsToRemoveResponse.axisIndex] < pointsToRemoveResponse.cutLineValue) {
                 if (pointsToRemoveResponse.isPositive) {
                     point.vector.add(0b0)
                 } else {

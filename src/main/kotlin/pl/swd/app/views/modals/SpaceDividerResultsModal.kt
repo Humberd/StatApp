@@ -95,13 +95,11 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                     actionEvents()
                             .observeOn(Schedulers.computation())
                             .flatMap {
-                                val value = try {
-                                    listOf(worker?.nextIteration())
+                                try {
+                                    Observable.just(listOf(worker?.nextIteration()))
                                 } catch (e: IterationsAlreadyCompletedException) {
-                                    emptyList<PointsToRemoveIn1CutResponse>()
+                                    Observable.just(emptyList<PointsToRemoveIn1CutResponse>())
                                 }
-
-                                Observable.just(value)
                             }
                             .observeOnFx()
                             .doOnNext { results ->
@@ -177,7 +175,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     }
 }
 
-open class BetterScatterChart<T,P>(xAxis: Axis<T>?, yAxis: Axis<P>?) : ScatterChart<T, P>(xAxis, yAxis) {
+open class BetterScatterChart<T, P>(xAxis: Axis<T>?, yAxis: Axis<P>?) : ScatterChart<T, P>(xAxis, yAxis) {
     fun refresh() {
         requestChartLayout()
     }
