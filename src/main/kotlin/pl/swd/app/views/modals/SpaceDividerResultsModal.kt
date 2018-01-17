@@ -12,10 +12,7 @@ import javafx.scene.control.TableView
 import javafx.scene.shape.Line
 import javafx.scene.shape.Shape
 import mu.KLogging
-import pl.swd.app.services.SpaceDivider.IterationsAlreadyCompletedException
-import pl.swd.app.services.SpaceDivider.PointsToRemoveIn1CutResponse
-import pl.swd.app.services.SpaceDivider.SpaceDividerPoint
-import pl.swd.app.services.SpaceDivider.SpaceDividerService
+import pl.swd.app.services.SpaceDivider.*
 import pl.swd.app.utils.emptyObservableList
 import tornadofx.*
 
@@ -24,6 +21,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
 
     val spaceDividerService: SpaceDividerService by di()
     val pointsList: List<SpaceDividerPoint> by param()
+    val axisesNames: List<String> by param()
     val showChart: Boolean by param()
     var resultsTable: TableView<PointsToRemoveIn1CutResponse> by singleAssign()
     var worker: SpaceDividerService.SpaceDividerWorker? = null
@@ -42,20 +40,18 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                             lines.clear()
                             for (result in (worker?.iterationsResults ?: emptyList<PointsToRemoveIn1CutResponse>())) {
                                 if (result.axisIndex == 0) {
-                                    lines.add(
-                                            Line(
-                                                    xAxis.getDisplayPosition(result.cutLineValue),
-                                                    height,
-                                                    xAxis.getDisplayPosition(result.cutLineValue),
-                                                    0.0)
+                                    lines.add(Line(
+                                            xAxis.getDisplayPosition(result.cutLineValue),
+                                            height,
+                                            xAxis.getDisplayPosition(result.cutLineValue),
+                                            0.0)
                                     )
                                 } else {
-                                    lines.add(
-                                            Line(
-                                                    0.0,
-                                                    yAxis.getDisplayPosition(result.cutLineValue),
-                                                    width,
-                                                    yAxis.getDisplayPosition(result.cutLineValue))
+                                    lines.add(Line(
+                                            0.0,
+                                            yAxis.getDisplayPosition(result.cutLineValue),
+                                            width,
+                                            yAxis.getDisplayPosition(result.cutLineValue))
                                     )
                                 }
                             }
@@ -82,8 +78,14 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                                     value.name = key
                                     data.add(value)
                                 }
-                        (xAxis as NumberAxis).setForceZeroInRange(false)
-                        (yAxis as NumberAxis).setForceZeroInRange(false)
+                        (xAxis as NumberAxis).also {
+                            it.setForceZeroInRange(false)
+                            it.label = axisesNames[0]
+                        }
+                        (yAxis as NumberAxis).also {
+                            it.setForceZeroInRange(false)
+                            it.label = axisesNames[1]
+                        }
                     }
                     add(chart)
                 }
@@ -135,6 +137,11 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                         refreshChart()
                     }
                 }
+                button("Classify a point") {
+                    action {
+
+                    }
+                }
 
                 separator()
 
@@ -142,7 +149,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                     makeIndexColumn()
                     column("Cut Line", PointsToRemoveIn1CutResponse::class) {
                         value { cellDataFeatures ->
-                            "${(cellDataFeatures.value.axisIndex + 97).toChar()} = ${cellDataFeatures.value.cutLineValue}"
+                            "${worker?.axisNames?.get(cellDataFeatures.value.axisIndex)} = ${cellDataFeatures.value.cutLineValue}"
                         }
                     }
                 }
@@ -171,7 +178,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     fun initializeAlgorithm() {
         val newList = ArrayList(pointsList)
                 .map { it.copy(vector = arrayListOf()) }
-        worker = spaceDividerService.initializeAlgorithm(newList)
+        worker = spaceDividerService.initializeAlgorithm(SpaceDividerInitData(newList, axisesNames))
         resultsTable.items = emptyObservableList()
     }
 

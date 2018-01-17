@@ -95,14 +95,21 @@ class SpaceDividerConfigModal : Modal("Space Divider Config") {
                 enableWhen(model.valid)
                 action {
                     val pointsList = generateSpaceDivierPointsList()
+                    val axisesNames = getSelectedAxisesNames()
                     find(SpaceDividerResultsModal::class, mapOf(
                             SpaceDividerResultsModal::pointsList to pointsList,
+                            SpaceDividerResultsModal::axisesNames to axisesNames,
                             SpaceDividerResultsModal::showChart to (model.chart2DCheckbox.value && model.selectedColumns.value.size == 2)
                     )).openWindow()
                     close()
                 }
             }
         }
+    }
+
+    private fun getSelectedAxisesNames(): List<String> {
+        return model.selectedColumns.value
+                .map { it.name }
     }
 
     private fun generateSpaceDivierPointsList(): List<SpaceDividerPoint> {

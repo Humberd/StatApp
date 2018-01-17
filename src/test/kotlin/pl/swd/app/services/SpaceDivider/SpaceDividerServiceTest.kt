@@ -788,7 +788,7 @@ class SpaceDividerServiceTest {
                     SpaceDividerPoint(arrayOf(4f, 2f), "a")
             )
 
-            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+            val worker = spaceDividerService.initializeAlgorithm(SpaceDividerInitData(pointsList, emptyList()))
 
             assertEquals(2, worker.axisesSize)
             /* Make sure 2 lists have the same content before 1 iteration */
@@ -875,7 +875,7 @@ class SpaceDividerServiceTest {
                     SpaceDividerPoint(arrayOf(2f, 2f), "a")
             )
 
-            val worker = spaceDividerService.initializeAlgorithm(pointsList)
+            val worker = spaceDividerService.initializeAlgorithm(SpaceDividerInitData(pointsList, emptyList()))
 
             assertEquals(2, worker.axisesSize)
             /* Make sure 2 lists have the same content before 1 iteration */

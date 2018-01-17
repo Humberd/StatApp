@@ -9,18 +9,20 @@ import kotlin.collections.ArrayList
 class SpaceDividerService {
     companion object : KLogging()
 
-    fun initializeAlgorithm(pointsList: List<SpaceDividerPoint>): SpaceDividerWorker {
+    fun initializeAlgorithm(initData: SpaceDividerInitData): SpaceDividerWorker {
+        val (pointsList) = initData
         val axisesSize = determineAxisesSize(pointsList)
         val initialSortedAxisesPoints = sortAxisesPointsAscending(pointsList, axisesSize)
         val remainingSortedAxisesPoints = sortAxisesPointsAscending(pointsList, axisesSize)
 
-        return SpaceDividerWorker(initialSortedAxisesPoints, remainingSortedAxisesPoints, axisesSize)
+        return SpaceDividerWorker(initialSortedAxisesPoints, remainingSortedAxisesPoints, axisesSize, initData.axisNames)
     }
 
     inner class SpaceDividerWorker(
             val initialSortedAxisesPoints: List<List<SpaceDividerPoint>>,
             val remainingSortedAxisesPoints: List<List<SpaceDividerPoint>>,
-            val axisesSize: Int
+            val axisesSize: Int,
+            val axisNames: List<String>
     ) {
         val iterationsResults = ArrayList<PointsToRemoveIn1CutResponse>()
 
@@ -267,6 +269,11 @@ class SpaceDividerService {
         }
     }
 }
+
+data class SpaceDividerInitData(
+        val pointsList: List<SpaceDividerPoint>,
+        val axisNames: List<String>
+)
 
 data class SpaceDividerPoint(
         /**
