@@ -109,7 +109,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                                 }
 
                                 resultsTable.items.addAll(results)
-                                chart.refresh()
+                                refreshChart()
                             }
                             .subscribe()
                 }
@@ -125,14 +125,14 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                                 }
 
                                 resultsTable.items.addAll(results)
-                                chart.refresh()
+                                refreshChart()
                             }
                             .subscribe()
                 }
                 button("Reset") {
                     action {
                         initializeAlgorithm()
-                        chart.refresh()
+                        refreshChart()
                     }
                 }
 
@@ -159,6 +159,12 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
         currentWindow?.apply {
             width = if (showChart) 800.0 else 400.0
             centerOnScreen()
+        }
+    }
+
+    fun refreshChart() {
+        if (showChart) {
+            chart.refresh()
         }
     }
 
