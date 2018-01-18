@@ -214,11 +214,15 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
 
     fun generateDatatable(): DataTable {
         val rowsList = worker!!.initialSortedAxisesPoints.first()
-                .map { spaceDividerPoint -> spaceDividerPoint.vector.toList()}
-                .map { it.joinToString(";") }
+                .map { spaceDividerPoint ->
+                    "${spaceDividerPoint.vector.joinToString(";")};${spaceDividerPoint.decisionClass}"
+                }
 
-        val columnNames = worker!!.iterationsResults
+        var columnNames = worker!!.iterationsResults
                 .mapIndexed { index, pointsToRemoveIn1CutResponse -> (index + 1).toString() }
+        columnNames = ArrayList(columnNames).also {
+            it.add("Decision Class")
+        }
 
         return dataFileParserService.generateDataTable(rowsList, columnNames, DataFileOption.USER_COLUMS)
     }
