@@ -139,7 +139,10 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                 }
                 button("Classify a point") {
                     action {
-
+                        find(SpaceDividerClassifyPointModal::class, mapOf(
+                                SpaceDividerClassifyPointModal::axisesNames to axisesNames,
+                                SpaceDividerClassifyPointModal::worker to worker
+                        )).openModal(block = true)
                     }
                 }
 
