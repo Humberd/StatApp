@@ -1,6 +1,5 @@
 package pl.swd.app.services;
 
-import javafx.stage.FileChooser
 import mu.KLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

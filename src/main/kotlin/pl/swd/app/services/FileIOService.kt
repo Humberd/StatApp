@@ -20,6 +20,7 @@ class FileIOService {
 
     val textFileExtensions = arrayOf(FileChooser.ExtensionFilter("Text Tile", "*.txt"))
     val projectFileExtensions by lazy { arrayOf(FileChooser.ExtensionFilter("StatApp Project", "*.${appProps.projectFileExtension}")) }
+    val csvFileExtension = arrayOf(FileChooser.ExtensionFilter("CSV", "*.csv"))
 
     /**
      * Opens a new window with an option of choosing a file
@@ -76,6 +77,12 @@ class FileIOService {
 
         File(fileName).apply {
             writeText(jsonData)
+        }
+    }
+
+    fun saveAsAnyToFile(data: List<String>, fileName: String) {
+        File(fileName).apply {
+            writeText(data.joinToString("\n"))
         }
     }
 

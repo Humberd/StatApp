@@ -13,6 +13,7 @@ import pl.swd.app.services.DataFileParser.DataFileOption
 import pl.swd.app.services.DataFileParser.DataFileParserService
 import pl.swd.app.services.DecisionTree.TreeService
 import pl.swd.app.views.modals.Chart2DConfigModal
+import pl.swd.app.views.modals.ExportSpreadSheetModal
 import pl.swd.app.views.modals.ParseDataFileOptionsModal
 import pl.swd.app.views.modals.SpaceDividerConfigModal
 import tornadofx.*
@@ -56,7 +57,7 @@ class MenuBarView : View("My View") {
 
             item("Import Data", KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN)) {
                 actionEvents()
-                        .doOnNext { logger.debug { "'Open File' Dialog clicked" } }
+                        .doOnNext { logger.debug { "'Import Data' menu item clicked" } }
                         .flatMap { fileIOService.openFileDialogObs() }
                         .map { file ->
                             val optionsView = find(ParseDataFileOptionsModal::class).apply { openModal(block = true) }
@@ -68,6 +69,17 @@ class MenuBarView : View("My View") {
                             registerSpreadSheet(file, optionsView.getResultList().get(), optionsView.getOption())
                         }
                         .subscribe { logger.debug { "Registered new SpreadSheet: ${it}" } }
+            }
+            item("Export Data", KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN)) {
+                actionEvents()
+                        .doOnNext { logger.debug { "'Export Data' menu item clicked" } }
+                        .map {
+                            find(ExportSpreadSheetModal::class).also {
+                                it.openModal()
+                            }
+                        }
+                        .subscribe()
+
             }
         }
 
@@ -134,10 +146,6 @@ class MenuBarView : View("My View") {
             item("2D Chart") {
                 actionEvents()
                         .subscribe { find(Chart2DConfigModal::class).openWindow() }
-            }
-
-            item("3D Chart") {
-
             }
         }
     }

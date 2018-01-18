@@ -221,7 +221,7 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
         var columnNames = worker!!.iterationsResults
                 .mapIndexed { index, pointsToRemoveIn1CutResponse -> (index + 1).toString() }
         columnNames = ArrayList(columnNames).also {
-            it.add("Decision Class")
+            it.add("DecisionClass")
         }
 
         return dataFileParserService.generateDataTable(rowsList, columnNames, DataFileOption.USER_COLUMS)
