@@ -12,14 +12,23 @@ import javafx.scene.control.TableView
 import javafx.scene.shape.Line
 import javafx.scene.shape.Shape
 import mu.KLogging
+import pl.swd.app.models.DataTable
+import pl.swd.app.models.SpreadSheet
+import pl.swd.app.services.DataFileParser.DataFileOption
+import pl.swd.app.services.DataFileParser.DataFileParserService
+import pl.swd.app.services.ProjectService
 import pl.swd.app.services.SpaceDivider.*
 import pl.swd.app.utils.emptyObservableList
+import pl.swd.app.views.TabsView
 import tornadofx.*
 
 class SpaceDividerResultsModal : Modal("Space Divider Result") {
     companion object : KLogging()
 
     val spaceDividerService: SpaceDividerService by di()
+    val projectService: ProjectService by di()
+    val tabsView: TabsView by inject()
+    val dataFileParserService: DataFileParserService by di()
     val pointsList: List<SpaceDividerPoint> by param()
     val axisesNames: List<String> by param()
     val showChart: Boolean by param()
@@ -145,6 +154,19 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
                         )).openModal(block = true)
                     }
                 }
+                button("Create spreadsheet") {
+                    action {
+                        projectService.currentProject.value.get().also {
+                            val spreadSheet = SpreadSheet(
+                                    name = "Space Divider Result",
+                                    autoOpenTabOnLoad = false,
+                                    dataTable = generateDatatable()
+                            )
+                            it.addSpreadSheet(spreadSheet)
+                            tabsView.addTab(spreadSheet)
+                        }
+                    }
+                }
 
                 separator()
 
@@ -188,6 +210,17 @@ class SpaceDividerResultsModal : Modal("Space Divider Result") {
     fun showAllIterationsCompletedDialog() {
         information("No more iterations",
                 "The are not points left to cut. Algorithm completed")
+    }
+
+    fun generateDatatable(): DataTable {
+        val rowsList = worker!!.initialSortedAxisesPoints.first()
+                .map { spaceDividerPoint -> spaceDividerPoint.vector.toList()}
+                .map { it.joinToString(";") }
+
+        val columnNames = worker!!.iterationsResults
+                .mapIndexed { index, pointsToRemoveIn1CutResponse -> (index + 1).toString() }
+
+        return dataFileParserService.generateDataTable(rowsList, columnNames, DataFileOption.USER_COLUMS)
     }
 }
 

@@ -69,7 +69,7 @@ class SpaceDividerClassifyPointModal : Modal("Classify Point") {
 
         val closestPoint = getClosestPoint(worker.initialSortedAxisesPoints.first(), pointValues)
 
-        information("Result", "The point should be classivied as ${closestPoint.decisionClass}")
+        information("Result", "The point should be classified as ${closestPoint.decisionClass}")
     }
 
     fun getClosestPoint(pointsList: List<SpaceDividerPoint>, pointValues: Array<Float>): SpaceDividerPoint {
