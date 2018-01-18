@@ -4,6 +4,8 @@ data class DataRow(
         val rawInitialString: String,
         var rowValuesMap: Map<String, DataValue>
 ) {
+    var ida = 0
+
     fun addValue(columnName: String, data: DataValue) {
         val rowValuesMapp = rowValuesMap.toMutableMap()
         rowValuesMapp.put(columnName, data)

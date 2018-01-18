@@ -66,9 +66,9 @@ class DataFileParserService {
         }
 
         //parse row data
-        lineList.forEach {
+        lineList.forEachIndexed { i, r ->
             //Split row
-            val values = it.split(separatorRegex)
+            val values = r.split(separatorRegex)
             val rowMap = HashMap<String, DataValue>()
 
             if (values.size != colums.size) {
@@ -82,7 +82,10 @@ class DataFileParserService {
                 rowMap.put(colums[i].name, DataValue(value))
             }
 
-            rows.add(DataRow(it, rowMap))
+
+            val row = DataRow(r, rowMap)
+            row.ida = i
+            rows.add(row)
         }
 
         return DataTable(rows = rows.observable(), columns = colums.observable())

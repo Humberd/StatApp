@@ -33,7 +33,7 @@ class DiscretizationService {
         }
     }
 
-    private fun convertSelectedColumn(columnName: String, sectionNumber: Int, tabIndex: Int) {
+    fun convertSelectedColumn(columnName: String, sectionNumber: Int, tabIndex: Int) {
         if (!projectService.currentProject.value.isPresent) return
 
         val spreadSheet = projectService.currentProject.value.get().spreadSheetList[tabIndex]

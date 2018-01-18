@@ -50,7 +50,7 @@ class ClassifiQualityCheckModal: Modal("Classify Quality Data") {
     override val root = scrollpane()
 
     init {
-        decisionAttributesListView.items.addAll(columnNameList)
+        decisionAttributesListView.items.addAll(columnNameList.sorted())
         decisionAttributesListView.minWidth = 400.0
         decisionAttributesListView.maxHeight = 150.0
         decisionAttributesListView.selectionModel.selectionMode = SelectionMode.MULTIPLE
@@ -60,7 +60,7 @@ class ClassifiQualityCheckModal: Modal("Classify Quality Data") {
         mainBox.add(decisionAttributesListView)
 
         decisionClassLabel.text = "Decision class"
-        decisionClassComboBox.items.addAll(columnNameList)
+        decisionClassComboBox.items.addAll(columnNameList.sorted())
 
         mainBox.add(decisionClassLabel)
         mainBox.add(decisionClassComboBox)

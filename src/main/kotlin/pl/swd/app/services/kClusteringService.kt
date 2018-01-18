@@ -11,9 +11,14 @@ import pl.swd.app.views.modals.kClusteringModal
 import tornadofx.find
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 @Service
 class kClusteringService {
+
+    private val tag = "grupTag"
 
     @Autowired private lateinit var projectService: ProjectService
     @Autowired private lateinit var convertValueService: ConvertValueService
@@ -46,21 +51,19 @@ class kClusteringService {
         var newColumnValues: ArrayList<DataValue> = ArrayList()
 
         val a = clusterData(rows, userSelectedParameters)
-        val columns2 = project.get().spreadSheetList[tabIndex].dataTable.columns.toList()
-//        val newValue = classify(tabIndex, userSelectedParameters, rows)
-//
-//        userSelectedParameters.newDataRow.addValue(userSelectedParameters.decisionClassCol, DataValue(newValue))
-//        spreadSheet.dataTable.addRow(userSelectedParameters.newDataRow)
 
         spreadSheet.dataTable.rows.forEachIndexed { i, r ->
 
-            val value = a[i].rowValuesMap["clusterTagKey"]!!
+            val value = a[i].rowValuesMap[tag]!!
 
             newColumnValues.add(value)
-            r.addValue("clusterTagKey", value)
+            r.addValue(tag, value)
         }
 
-        spreadSheet.dataTable.columns.add(DataColumn("clusterTagKey", newColumnValues))
+        indexes(newColumnValues, generateColumnList(tabIndex).filter { it != tag }.filter { !userSelectedParameters.decisionCols.contains(it) }.first(), columns, spreadSheet, rows, a)
+        tablePrinter(newColumnValues, generateColumnList(tabIndex).filter { it != tag }.filter { !userSelectedParameters.decisionCols.contains(it) }.first(), columns, spreadSheet, rows, a)
+
+        spreadSheet.dataTable.columns.add(DataColumn(tag, newColumnValues))
     }
 
     private fun generateColumnList(tabIndex: Int): ArrayList<String> {
@@ -98,8 +101,9 @@ class kClusteringService {
         val invCov =  clasifiDataService.inverseCovarianceMatrix(data, conf.decisionCols)
 
         //select centers with k-means++
-        val first = data.first()
-        first.addValue("clusterTagKey", DataValue("0")) //Meyby not
+        val randomDataIndex = Random().nextInt(data.size - 1)
+        val first = data[randomDataIndex]
+        first.addValue(tag, DataValue("0")) //Meyby not
         val C = arrayListOf(data.first())
         for (i in 1..conf.kNum-1) {
             var minDistance = 0.0
@@ -127,7 +131,7 @@ class kClusteringService {
                     currentMaxDistance = minDistance
                 }
             }
-            mostDistantObject!!.addValue("clusterTagKey", DataValue(i.toString()))
+            mostDistantObject!!.addValue(tag, DataValue(i.toString()))
             C.add(mostDistantObject!!)
         }
         return C
@@ -139,11 +143,16 @@ class kClusteringService {
         for (i in 0..conf.kNum - 1) {
 
             val currentTagRows = data.filter {
-                it.rowValuesMap["clusterTagKey"]!!.value.toString() == i.toString()
+                if (it.rowValuesMap[tag] == null) {
+                    "0" == i.toString()
+                } else {
+                    it.rowValuesMap[tag]!!.value.toString() == i.toString()
+                }
+
             }
             val rowMap = HashMap<String, DataValue>()
             val newCenter = DataRow("", rowMap)
-            newCenter.addValue("clusterTagKey", DataValue(i.toString()))
+            newCenter.addValue(tag, DataValue(i.toString()))
 
             conf.decisionCols.forEach {
                 var sum = 0.0
@@ -187,9 +196,22 @@ class kClusteringService {
                         }
                     }
                 }
-                if(row.rowValuesMap["clusterTagKey"] == null || row.rowValuesMap["clusterTagKey"]!!.value.toString() != minDistanceObject.rowValuesMap["clusterTagKey"]!!.value.toString()) {
-                    row.addValue("clusterTagKey", DataValue(minDistanceObject.rowValuesMap["clusterTagKey"]!!.value ?: "0"))
+                if(row.rowValuesMap[tag] == null) {
+                    if (minDistanceObject.rowValuesMap[tag] == null) {
+                        row.addValue(tag, DataValue("0"))
+                        sthHasChangedTag = true
+                    } else {
+                        row.addValue(tag, DataValue(minDistanceObject.rowValuesMap[tag]!!.value ?: "0"))
+                        sthHasChangedTag = true
+                    }
+                } else if (row.rowValuesMap[tag] == null || minDistanceObject.rowValuesMap[tag] == null) {
+                    row.addValue(tag, DataValue("0"))
                     sthHasChangedTag = true
+                } else {
+                    if(row.rowValuesMap[tag]!!.value.toString() != minDistanceObject.rowValuesMap[tag]!!.value.toString()) {
+                        row.addValue(tag, DataValue(minDistanceObject.rowValuesMap[tag]!!.value ?: "0"))
+                        sthHasChangedTag = true
+                    }
                 }
             }
 
@@ -201,5 +223,85 @@ class kClusteringService {
         } while (true)
 
         return data
+    }
+
+    private fun tablePrinter(newColumnValues: ArrayList<DataValue>, columnNameToCompare: String, columns: List<DataColumn>, spreadSheet: SpreadSheet, rows: List<DataRow>, newRows: List<DataRow>) {
+        val clasifiValues = newColumnValues.distinct().map { it.value.toString().toInt() }
+        val oldValues = columns[spreadSheet.dataTable.getColumnIndexByName(columnNameToCompare!!).get()].columnValuesList.distinct().map { it.value.toString().toInt() }
+
+        var map = HashMap<Int, HashMap<Int, Int>>()
+
+        for (value in oldValues) {
+            var map1 = HashMap<Int, Int>()
+
+            for (value1 in clasifiValues) {
+                map1.put(value1, 0)
+            }
+
+            map.put(value, map1)
+        }
+
+        if (columnNameToCompare != null) {
+            rows.forEachIndexed { index, dataRow ->
+                var valueMap = map.get(dataRow.rowValuesMap[columnNameToCompare]!!.value.toString().toInt())!!
+                var calsifiValue = valueMap[newRows[index].rowValuesMap[tag]!!.value.toString().toInt()]!! + 1
+                valueMap.set(newRows[index].rowValuesMap[tag]!!.value.toString().toInt(), calsifiValue)
+            }
+
+            //PRINT
+            print("\n")
+            print("\t")
+            for(value in clasifiValues.sorted()) {
+                print("${value}\t")
+            }
+            print("\n")
+
+            for (value in map.keys) {
+                print("${value}\t")
+
+                var mapp = map[value]!!
+
+                for (value1 in mapp.keys) {
+                    print("${mapp[value1]!!}\t")
+                }
+                print("\n")
+            }
+        }
+    }
+
+    private fun indexes(newColumnValues: ArrayList<DataValue>, columnNameToCompare: String, columns: List<DataColumn>, spreadSheet: SpreadSheet, rows: List<DataRow>, newRows: List<DataRow>) {
+        val clasifiValues = newColumnValues.distinct().map { it.value.toString().toInt() }.sorted()
+        val oldValues = columns[spreadSheet.dataTable.getColumnIndexByName(columnNameToCompare!!).get()].columnValuesList.distinct().map { it.value.toString().toInt() }
+
+        var indexedMap = HashMap<Int, ArrayList<Int>>()
+
+        val numberValuesForOneOldValue = clasifiValues.count()/oldValues.count()
+        var a = 0
+
+        for(i in oldValues){
+            var list = ArrayList<Int>()
+            for(index in a..clasifiValues.size) {
+                if (index == a + numberValuesForOneOldValue) {
+                    a += numberValuesForOneOldValue
+                    break
+                }
+                list.add(clasifiValues[index])
+            }
+            indexedMap.put(i, list)
+        }
+
+        var equalElementsJacard = 0
+
+        //JACARD
+        if (columnNameToCompare != null) {
+            rows.forEachIndexed { index, dataRow ->
+                if(indexedMap[dataRow.rowValuesMap[columnNameToCompare]!!.value.toString().toInt()]!!.contains(newRows[index].rowValuesMap[tag]!!.value.toString().toInt())) {
+                    equalElementsJacard += 1
+                }
+            }
+
+            ProjectSaverService.logger.debug { "Jacard index: ${equalElementsJacard.toDouble()/(newRows.count().toDouble() + newRows.count().toDouble() - equalElementsJacard.toDouble())}" }
+            ProjectSaverService.logger.debug { "Simple matching coefficient: ${equalElementsJacard.toDouble()/(newRows.count().toDouble())}" }
+        }
     }
 }
